@@ -44,43 +44,79 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* --- NAVBAR --- */
-#navbar {
-    display: flex;
-    align-items: center;
-    background-color: var(--bg-panel);
-    padding: 0 24px;
-    height: 64px;
-    border-bottom: 1px solid var(--border);
-    z-index: 20;
-    box-shadow: 0 1px 10px rgba(0,0,0,0.3);
-}
+/* =========================================
+           ULTRA-MINIMALIST NAVBAR (Pill-in-Pill Aesthetic)
+           ========================================= */
+        #navbar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 0 32px;
+            width: 100vw;
+            height: 70px;
+            background: #0b1120; /* Matches your workspace perfectly */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            z-index: 500;
+        }
 
-.brand {
-    font-size: 1.05rem; font-weight: 700; letter-spacing: 1.5px;
-    color: var(--text-main); margin-right: 40px; display: flex;
-    align-items: center; gap: 10px; text-transform: uppercase;
-}
-.brand::before {
-    content: ''; display: inline-block; width: 10px; height: 10px;
-    background: var(--accent); border-radius: 50%; box-shadow: 0 0 12px var(--accent);
-}
+        /* Navbar Zones */
+        .navbar-left { display: flex; align-items: center; justify-content: flex-start; gap: 16px; }
+        
+        /* Central Container Pill */
+        .navbar-center { 
+            display: flex; align-items: center; justify-content: center; gap: 2px; 
+            background: rgba(255, 255, 255, 0.03); /* Extremely subtle dark container */
+            padding: 4px; 
+            border-radius: 100px; /* Full pill shape */
+            border: 1px solid rgba(255, 255, 255, 0.03); 
+        }
+        
+        .navbar-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 
-/* Navbar Buttons */
-.tool-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 16px; margin: 0 4px; font-size: 0.85rem; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); }
-.tool-btn:hover { color: var(--text-main); background: var(--bg-surface); }
-.tool-btn.active { color: var(--accent); background: var(--accent-glow); border-color: rgba(20, 184, 166, 0.3); }
+        /* Brand Identity */
+        .brand { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+        .brand::before { content: ''; display: inline-block; width: 18px; height: 18px; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"/><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" fill="%23ffffff"/><circle cx="128" cy="128" r="40" fill="%23ffffff"/></svg>'); background-size: contain; background-repeat: no-repeat; opacity: 0.9; }
+        .project-name-badge { font-size: 0.8rem; font-weight: 500; color: #8b949e; padding: 4px 0; letter-spacing: 0.2px; cursor: pointer; transition: color 0.2s; }
+        .project-name-badge:hover { color: #ffffff; }
 
-.lang-switch { margin-left: auto; display: flex; background: var(--bg-surface); border-radius: var(--radius-sm); padding: 4px; border: 1px solid var(--border); }
-.lang-btn { background: transparent; border: none; color: var(--text-muted); padding: 6px 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border-radius: 4px; transition: var(--transition); }
-.lang-btn.active { background: var(--bg-hover); color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        /* Minimalist Tool Buttons */
+        .tool-btn {
+            display: flex; align-items: center; gap: 8px;
+            background: transparent; border: none; 
+            color: #8b949e; padding: 8px 16px; 
+            font-size: 0.8rem; font-weight: 500; /* Softer, high-end font weight */
+            border-radius: 100px; /* Inner pill shape */
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .tool-btn i { font-size: 1.1rem; }
+        
+        .tool-btn:hover { color: #ffffff; }
+        
+        /* The "Active Pill" Effect */
+        .tool-btn.active { 
+            color: #ffffff; 
+            background: rgba(255, 255, 255, 0.12); /* Solid light-grey pill inside the dark pill */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
 
-.export-group { display: flex; gap: 12px; margin-left: 24px; padding-left: 24px; border-left: 1px solid var(--border); }
-.action-btn { background-color: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; font-size: 0.8rem; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); }
-.action-btn:hover { background-color: var(--bg-hover); border-color: var(--text-muted); }
-.action-btn.btn-pdf { background-color: var(--accent); color: #042f2e; border: none; box-shadow: 0 4px 12px var(--accent-glow); }
-.action-btn.btn-pdf:hover { background-color: var(--accent-hover); box-shadow: 0 6px 16px var(--accent-glow); }
+        /* Hide the divider since modern pills don't use them */
+        .nav-divider { display: none; }
 
+        /* Refined Export Buttons */
+        .export-group { display: flex; gap: 12px; }
+        .action-btn { display: flex; align-items: center; gap: 6px; background-color: transparent; color: #a1a1aa; border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; font-size: 0.8rem; font-weight: 500; border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn:hover { background-color: rgba(255,255,255,0.05); color: #ffffff; }
+        .action-btn i { font-size: 1.1rem; }
+        
+        /* High-Contrast Primary CTA (Like the ai.work image) */
+        .btn-pdf { background-color: #ffffff !important; color: #000000 !important; font-weight: 600 !important; border: none !important; }
+        .btn-pdf:hover { opacity: 0.9; transform: scale(0.98); }
+        
+        /* Language Toggle Switch */
+        .lang-switch { display: flex; background: transparent; gap: 4px; border-radius: 100px; padding: 0; border: none; }
+        .lang-btn { background: transparent; border: none; color: #8b949e; padding: 6px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border-radius: 100px; transition: all 0.2s; }
+        .lang-btn:hover { color: #ffffff; }
+        .lang-btn.active { background: rgba(255,255,255,0.1); color: #ffffff; }
 /* --- LAYOUT FIXES (CONTAINER, SIDEBAR, MAIN) --- */
 #container {
     display: flex;

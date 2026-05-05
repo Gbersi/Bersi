@@ -18,7 +18,6 @@ const productDB = {
 };
 
 // --- UPDATED: ORGANIZED SUBFOLDER PATHS ---
-// The code automatically filters these so CCTV only shows CCTV icons, Fire shows Fire, etc.
 const categoryIcons = {
     cctv: ['icons/cctv/cctv1.png', 'icons/cctv/cctv2.png', 'icons/cctv/cctv3.png', 'icons/cctv/cctv4.png', 'icons/cctv/cctv5.png', 'icons/cctv/cctv6.png', 'icons/cctv/cctv7.png', 'icons/cctv/cctv8.png', 'icons/cctv/cctv9.png', 'icons/cctv/cctv10.png', 'icons/cctv/cctv11.avif', 'icons/cctv/cctv12.jpg', 'icons/cctv/cctv13.png', 'icons/cctv/cctv14.jpg'],
     security: ['icons/security/security1.png', 'icons/security/security2.jpg', 'icons/security/security3.jpg', 'icons/security/security4.webp', 'icons/security/security5.png', 'icons/security/security6.jpg', 'icons/security/security7.png', 'icons/security/security8.webp', 'icons/security/security9.png', 'icons/security/security10.png'],
@@ -33,7 +32,7 @@ Object.values(categoryIcons).forEach(arr => {
     arr.forEach(src => {
         const img = new Image();
         img.src = src;
-        img.onload = () => { draw(); }; // Redraw canvas once image is ready
+        img.onload = () => { draw(); }; 
         loadedIcons[src] = img;
     });
 });
@@ -46,7 +45,7 @@ let devices = [], cables = [];
 let selectedDevice = null, isDragging = false, activePath = null, mousePos = {x:0, y:0};
 let currentProduct = null;
 let currentIcon = '';
-let blueprints = []; // Array to hold all floors: { id, name, img, imgData, devices, cables }
+let blueprints = []; 
 let activeBlueprintId = null;
 
 // UI Elements
@@ -143,11 +142,11 @@ window.exportLayout = (format) => {
     
     tCtx.fillStyle = '#ffffff'; tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height); tCtx.drawImage(canvas, 0, 0);
     tCtx.fillStyle = '#121212'; tCtx.fillRect(0, canvas.height, tempCanvas.width, tempCanvas.height - canvas.height); 
-    tCtx.fillStyle = '#00d1b2'; tCtx.font = "bold 24px 'Segoe UI'"; tCtx.fillText(dict[currentLang].export_title, 40, canvas.height + 50);
+    tCtx.fillStyle = '#4f46e5'; tCtx.font = "bold 24px 'Segoe UI'"; tCtx.fillText(dict[currentLang].export_title, 40, canvas.height + 50);
     tCtx.fillStyle = '#ffffff'; tCtx.font = "bold 18px 'Segoe UI'"; tCtx.fillText(dict[currentLang].export_subtitle + " | " + new Date().toLocaleDateString(), 40, canvas.height + 80);
 
     let y = canvas.height + 120; tCtx.font = "16px 'Segoe UI'";
-    for (let [item, count] of Object.entries(counts)) { tCtx.fillStyle = '#cccccc'; tCtx.fillText(item, 40, y); tCtx.fillStyle = '#00d1b2'; tCtx.font = "bold 16px 'Segoe UI'"; tCtx.fillText(count + "x", 600, y); y += 35; }
+    for (let [item, count] of Object.entries(counts)) { tCtx.fillStyle = '#cccccc'; tCtx.fillText(item, 40, y); tCtx.fillStyle = '#4f46e5'; tCtx.font = "bold 16px 'Segoe UI'"; tCtx.fillText(count + "x", 600, y); y += 35; }
 
     const imgData = tempCanvas.toDataURL('image/jpeg', 0.95);
     if (format === 'jpg') { 
@@ -176,7 +175,6 @@ function renderIconPicker(catOverride) {
         const btn = document.createElement('div');
         btn.className = 'icon-btn';
         
-        // Renders the image in the picker
         btn.innerHTML = `<img src="${iconPath}" alt="icon" onerror="this.style.display='none'">`;
         
         if (selectedDevice && selectedDevice.cat !== 'cable') {
@@ -191,7 +189,6 @@ function renderIconPicker(catOverride) {
             btn.classList.add('active');
             currentIcon = iconPath;
             
-            // FIX: Only update an existing device if we are actively in "Edit" (select) mode
             if(currentCat === 'select' && selectedDevice && selectedDevice.cat !== 'cable') {
                 selectedDevice.icon = currentIcon;
                 draw();
@@ -296,8 +293,6 @@ function selectProduct(prod, element) {
 }
 
 const updateDeviceSpecs = () => {
-    // FIX: Only update the selected device if the user is in "EDIT" (select) mode.
-    // If they are in placement mode, the sliders should only prepare settings for the NEXT camera.
     if (currentCat === 'select' && selectedDevice && selectedDevice.cat !== 'cable') {
         selectedDevice.fov = parseInt(fovInput.value);
         selectedDevice.range = parseInt(distInput.value);
@@ -337,8 +332,6 @@ canvas.addEventListener('mousedown', (e) => {
         };
         devices.push(newDev); 
         
-        // FIX: Ensure we deselect immediately after stamping the camera down. 
-        // This prevents the sidebar from accidentally editing this newly placed camera.
         selectedDevice = null; 
         draw();
     }
@@ -355,7 +348,6 @@ canvas.addEventListener('contextmenu', (e) => { e.preventDefault(); finishCable(
 
 canvas.addEventListener('wheel', (e) => { 
     e.preventDefault(); 
-    // Allow rotating the item you are currently editing, or the very last item you placed 
     let t = (currentCat === 'select') ? selectedDevice : (devices.length>0 ? devices[devices.length-1] : null); 
     if (t && t.cat!=='cable') { t.rotation += e.deltaY * 0.05; draw(); } 
 });
@@ -404,7 +396,8 @@ function draw() {
         
         if(hasFOV) {
             ctx.beginPath(); ctx.moveTo(d.x, d.y);
-            ctx.fillStyle = d.cat==='cctv' ? "rgba(0, 209, 178, 0.25)" : d.cat==='security' ? "rgba(180, 0, 255, 0.2)" : "rgba(255, 165, 0, 0.3)"; 
+            // UPDATED: Electric Indigo Color (#4f46e5)
+            ctx.fillStyle = d.cat==='cctv' ? "rgba(79, 70, 229, 0.25)" : d.cat==='security' ? "rgba(180, 0, 255, 0.2)" : "rgba(255, 165, 0, 0.3)"; 
             const start = (d.rotation - d.fov / 2) * Math.PI / 180, end = (d.rotation + d.fov / 2) * Math.PI / 180;
             
             for (let a = start; a <= end; a += 0.05) {
@@ -420,8 +413,8 @@ function draw() {
             ctx.lineTo(d.x, d.y); ctx.fill();
         }
 
-        // DRAW PROFESSIONAL MARKER (White circle with Colored Border)
-        const catColor = {cctv:'#00d1b2', security:'#b400ff', access:'#0088ff', fire:'#ef4444', gate:'#f59e0b'}[d.cat];
+        // UPDATED: Solid Indigo accent color
+        const catColor = {cctv:'#4f46e5', security:'#b400ff', access:'#0088ff', fire:'#ef4444', gate:'#f59e0b'}[d.cat];
         
         ctx.beginPath(); 
         ctx.arc(d.x, d.y, 14, 0, Math.PI*2);
@@ -436,11 +429,9 @@ function draw() {
             ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
         }
 
-        // DRAW FLATICON IMAGE
         if (d.icon && loadedIcons[d.icon] && loadedIcons[d.icon].complete && loadedIcons[d.icon].naturalWidth > 0) {
             ctx.drawImage(loadedIcons[d.icon], d.x - 10, d.y - 10, 20, 20);
         } else {
-            // Fallback to text if image is missing/broken
             ctx.fillStyle = "#333333"; 
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
@@ -459,7 +450,7 @@ function draw() {
 
 function updateEquipmentList() {
     if (devices.length === 0 && cables.length === 0) { 
-        bomList.innerHTML = `<div style="color:#666; font-size:0.8rem; text-align:center;">${dict[currentLang].msg_empty}</div>`; 
+        bomList.innerHTML = `<div style="color:#8b949e; font-size:0.8rem; text-align:center;">${dict[currentLang].msg_empty}</div>`; 
         return; 
     }
     
@@ -492,10 +483,7 @@ function updateEquipmentList() {
 }
 
 // --- MULTIPLE BLUEPRINT LOGIC ---
-
-// Function to switch between blueprints
 window.switchBlueprint = (id) => {
-    // 1. Save the current state to the active blueprint before switching
     if (activeBlueprintId !== null) {
         let currentBp = blueprints.find(b => b.id === activeBlueprintId);
         if (currentBp) {
@@ -504,7 +492,6 @@ window.switchBlueprint = (id) => {
         }
     }
 
-    // 2. Load the newly selected blueprint's state
     activeBlueprintId = id;
     let nextBp = blueprints.find(b => b.id === id);
     if (nextBp) {
@@ -513,12 +500,10 @@ window.switchBlueprint = (id) => {
         devices = [...nextBp.devices];
         cables = [...nextBp.cables];
         
-        // Deselect any active items
         selectedDevice = null;
         activePath = null;
         document.getElementById('deleteBtn').classList.remove('visible');
         
-        // Resize canvas to match the new floorplan
         canvas.width = blueprint.width;
         canvas.height = blueprint.height;
         canvas.style.backgroundImage = 'none';
@@ -528,7 +513,36 @@ window.switchBlueprint = (id) => {
     draw();
 };
 
-// Function to render the list in the sidebar
+// NEW: Delete Blueprint Feature
+window.deleteBlueprint = (id, event) => {
+    // Prevent switching to the blueprint when we click the 'x'
+    if (event) event.stopPropagation();
+
+    if (!confirm("Are you sure you want to permanently remove this floorplan from the project?")) return;
+
+    blueprints = blueprints.filter(b => b.id !== id);
+
+    if (blueprints.length === 0) {
+        // We deleted the last one, reset workspace completely
+        activeBlueprintId = null;
+        blueprint = null;
+        blueprintData = null;
+        devices = [];
+        cables = [];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = 1000;
+        canvas.height = 700;
+        if(typeof Toast !== 'undefined') Toast.show('info', 'All floorplans removed.');
+    } else if (activeBlueprintId === id) {
+        // We deleted the one we are currently looking at, switch to the first available
+        window.switchBlueprint(blueprints[0].id);
+    } else {
+        // We deleted a background one, just re-render list
+        renderBlueprintList();
+    }
+};
+
+// UPDATED: Renders the list with the 'X' button included
 function renderBlueprintList() {
     const list = document.getElementById('blueprint-list');
     if (!list) return;
@@ -537,14 +551,62 @@ function renderBlueprintList() {
     blueprints.forEach(bp => {
         const item = document.createElement('div');
         item.className = `blueprint-item ${bp.id === activeBlueprintId ? 'active' : ''}`;
-        item.innerHTML = `<span>${bp.name}</span>`;
-        item.onclick = () => window.switchBlueprint(bp.id);
+        
+        // Add flex properties to format the text and the 'x' button nicely
+        item.style.display = 'flex';
+        item.style.justifyContent = 'space-between';
+        item.style.alignItems = 'center';
+
+        item.innerHTML = `
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${bp.name}</span>
+            <button class="delete-bp-btn" onclick="deleteBlueprint(${bp.id}, event)" style="background: none; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer; padding: 0 4px; transition: transform 0.2s;">✖</button>
+        `;
+        
+        // Ensure clicking the item (but NOT the button) switches blueprints
+        item.onclick = (e) => {
+            if(e.target.tagName !== 'BUTTON') {
+                window.switchBlueprint(bp.id);
+            }
+        };
+        
         list.appendChild(item);
     });
 }
 
-// Upload handler for adding new blueprints
-document.getElementById('upload').onchange = (e) => { 
+// ==========================================
+// WORKSPACE BLUEPRINT UPLOAD LOGIC
+// ==========================================
+const workspaceDropZone = document.getElementById('drop-zone');
+const workspaceUpload = document.getElementById('upload');
+
+workspaceDropZone.addEventListener('click', () => {
+    workspaceUpload.click();
+});
+
+workspaceDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    workspaceDropZone.style.borderColor = '#ffffff';
+    workspaceDropZone.style.backgroundColor = 'rgba(255,255,255,0.05)';
+});
+
+workspaceDropZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    workspaceDropZone.style.borderColor = ''; 
+    workspaceDropZone.style.backgroundColor = '';
+});
+
+workspaceDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    workspaceDropZone.style.borderColor = '';
+    workspaceDropZone.style.backgroundColor = '';
+    
+    if (e.dataTransfer.files.length > 0) {
+        workspaceUpload.files = e.dataTransfer.files;
+        workspaceUpload.dispatchEvent(new Event('change')); 
+    }
+});
+
+workspaceUpload.onchange = (e) => { 
     const file = e.target.files[0];
     if (!file) return;
 
@@ -552,12 +614,10 @@ document.getElementById('upload').onchange = (e) => {
     reader.onload = (ev) => { 
         const img = new Image(); 
         img.onload = () => { 
-            // 1. Ask the user to name the floorplan
             let defaultName = `Level ${blueprints.length + 1}`;
             let bpName = prompt("Name this floorplan (e.g., Ground Floor, Roof, Level 1):", defaultName);
             if (!bpName) bpName = defaultName;
 
-            // 2. Extract image data for the wall-blocking feature
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = img.width;
             tempCanvas.height = img.height;
@@ -565,31 +625,30 @@ document.getElementById('upload').onchange = (e) => {
             tempCtx.drawImage(img, 0, 0);
             const imgData = tempCtx.getImageData(0, 0, img.width, img.height);
 
-            // 3. Create the blueprint object
             const newBlueprint = {
-                id: Date.now(), // Unique ID
+                id: Date.now(),
                 name: bpName,
                 img: img,
                 imgData: imgData,
-                devices: [], // Starts empty
-                cables: []   // Starts empty
+                devices: [], 
+                cables: []   
             };
 
-            // 4. Add to array and switch to it
             blueprints.push(newBlueprint);
             window.switchBlueprint(newBlueprint.id);
+            
+            if(typeof Toast !== 'undefined') Toast.show('success', `${bpName} added successfully!`);
         }; 
         img.src = ev.target.result; 
     }; 
     reader.readAsDataURL(file); 
-    
-    // Clear the input so the user can upload the same file again if they want to
     e.target.value = '';
 };
+
 // ==========================================
 // SPA LANDING PAGE & MULTI-UPLOAD LOGIC
 // ==========================================
-let pendingUploads = []; // Temporary queue for landing page
+let pendingUploads = [];
 
 const landingOverlay = document.getElementById('landing-overlay');
 const landingDropZone = document.getElementById('landing-drop-zone');
@@ -597,24 +656,22 @@ const landingUpload = document.getElementById('landing-upload');
 const landingGallery = document.getElementById('landing-gallery');
 const launchBtn = document.getElementById('launch-btn');
 
-// --- 1. Drag & Drop Handlers ---
 landingDropZone.onclick = () => landingUpload.click();
 landingUpload.onchange = (e) => handleLandingFiles(e.target.files);
 
 landingDropZone.ondragover = (e) => { 
     e.preventDefault(); 
-    landingDropZone.style.background = 'var(--accent-glow)'; 
+    landingDropZone.style.background = 'rgba(255,255,255,0.05)'; 
 };
 landingDropZone.ondragleave = () => { 
-    landingDropZone.style.background = 'var(--bg-surface)'; 
+    landingDropZone.style.background = 'rgba(255, 255, 255, 0.02)'; 
 };
 landingDropZone.ondrop = (e) => {
     e.preventDefault();
-    landingDropZone.style.background = 'var(--bg-surface)';
+    landingDropZone.style.background = 'rgba(255, 255, 255, 0.02)';
     handleLandingFiles(e.dataTransfer.files);
 };
 
-// --- 2. Queue Files & Render Gallery ---
 function handleLandingFiles(files) {
     Array.from(files).forEach(file => {
         if (file.type.startsWith('image/')) pendingUploads.push(file);
@@ -626,13 +683,13 @@ function renderLandingGallery() {
     landingGallery.innerHTML = '';
     pendingUploads.forEach((file, index) => {
         const item = document.createElement('div');
-        item.className = 'blueprint-item'; // Reuses your sleek CSS
+        item.className = 'blueprint-item';
         item.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
                 <span style="font-size:1.2rem;">📄</span>
                 <span style="font-size:0.85rem; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${file.name}</span>
             </div>
-            <button onclick="removePendingFile(${index})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:1.1rem;">✖</button>
+            <button onclick="removePendingFile(${index})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.1rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">✖</button>
         `;
         landingGallery.appendChild(item);
     });
@@ -644,7 +701,6 @@ window.removePendingFile = (index) => {
     renderLandingGallery();
 };
 
-// --- 3. Launch Environment ---
 launchBtn.onclick = async () => {
     const projName = document.getElementById('project-name-input').value || 'Untitled Project';
     
@@ -657,27 +713,21 @@ launchBtn.onclick = async () => {
     launchBtn.style.opacity = "0.7";
     launchBtn.style.pointerEvents = "none";
 
-    // Set Name in Navbar
     const nameDisplay = document.getElementById('active-project-name');
     if (nameDisplay) nameDisplay.innerText = projName;
 
-    // Process all files concurrently
     for (let i = 0; i < pendingUploads.length; i++) {
         await processBlueprintFile(pendingUploads[i], i + 1);
     }
 
-    // Fade out overlay
     landingOverlay.style.opacity = '0';
     setTimeout(() => {
         landingOverlay.style.display = 'none';
-        // Auto-select the first blueprint
         if(blueprints.length > 0) window.switchBlueprint(blueprints[0].id);
         if(typeof Toast !== 'undefined') Toast.show('success', `Workspace launched with ${blueprints.length} blueprints!`);
     }, 400);
 };
 
-// --- 4. Async Blueprint Processor ---
-// Wraps the FileReader in a Promise so we can await multiple large images safely
 function processBlueprintFile(file, levelNum) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -691,11 +741,10 @@ function processBlueprintFile(file, levelNum) {
                 tempCtx.drawImage(img, 0, 0);
                 const imgData = tempCtx.getImageData(0, 0, img.width, img.height);
 
-                // Use the file name as the blueprint name (minus extension)
                 const cleanName = file.name.replace(/\.[^/.]+$/, "") || `Level ${levelNum}`;
 
                 blueprints.push({
-                    id: Date.now() + levelNum, // Ensure unique IDs
+                    id: Date.now() + levelNum,
                     name: cleanName,
                     img: img,
                     imgData: imgData,
@@ -709,5 +758,7 @@ function processBlueprintFile(file, levelNum) {
         reader.readAsDataURL(file);
     });
 }
+
+// --- INITIALIZATION ---
 window.setLanguage('en'); 
 window.setCategory('cctv', document.querySelector('.tool-btn[data-cat="cctv"]'));
