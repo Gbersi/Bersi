@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Popover System</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 0; padding: 0; height: 100vh; position: relative; overflow: hidden; background: #f0f2f5; }
+        .container { padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; height: 100%; box-sizing: border-box; }
+        .row { display: flex; justify-content: space-between; }
+        
+        button.popover-trigger {
+            padding: 10px 20px;
+            background: #212529;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button.popover-trigger:hover { background: #343a40; }
+
+        /* The Popover Element */
+        #smart-popover {
+            position: absolute;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 1000;
+            /* Default offset for animation */
+            transform: translateY(5px) scale(0.95);
+        }
+
+        #smart-popover.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        .popover-header { font-weight: bold; margin-bottom: 8px; border-bottom: 2px solid #f8f9fa; padding-bottom: 8px; color: #333; }
+        .popover-body { font-size: 0.9rem; color: #555; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top row buttons -->
+        <div class="row">
+            <button class="popover-trigger" data-content="I opened to the right and bottom because I'm stuck in the top left corner!">Top Left</button>
+            <button class="popover-trigger" data-content="I opened to the left and bottom to avoid clipping the right edge of your screen.">Top Right</button>
+        </div>
+        
+        <!-- Center area -->
+        <div style="text-align: center; margin-top: 15vh;">
+            <h2>Collision-Aware Popovers</h2>
+            <p style="color: #666; margin-bottom: 2rem;">Click the buttons in the corners. The popover will calculate screen boundaries and never cut itself off.</p>
+            <button class="popover-trigger" data-content="I have plenty of room, so I automatically centered myself below the button.">Center Button</button>
+        </div>
+
+        <!-- Bottom row buttons -->
+        <div class="row">
+            <button class="popover-trigger" data-content="I flipped up! If I opened downward, I would go completely off the screen.">Bottom Left</button>
+            <button class="popover-trigger" data-content="I flipped up AND aligned to the left. I'm a very smart popover.">Bottom Right</button>
+        </div>
+    </div>
+
+    <!-- Single Shared Popover Instance -->
+    <div id="smart-popover">
+        <div class="popover-header">Status Details</div>
+        <div class="popover-body" id="popover-text">Content goes here.</div>
+    </div>
+
+    <script>
+        const triggers = document.querySelectorAll('.popover-trigger');
+        const popover = document.getElementById('smart-popover');
+        const popoverText = document.getElementById('popover-text');
+        
+        // Padding gap between the popover and the button
+        const OFFSET = 10; 
+
+        // Global listener: Close popover when clicking anywhere outside of it
+        document.addEventListener('click', (e) => {
+            if (!popover.contains(e.target) && !e.target.classList.contains('popover-trigger')) {
+                popover.classList.remove('active');
+            }
+        });
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                // 1. Inject the data from the button into the popover
+                popoverText.textContent = trigger.getAttribute('data-content');
+                
+                // 2. We must display it to calculate dimensions (it remains invisible due to opacity: 0)
+                popover.style.display = 'block';
+                
+                // 3. Measure everything
+                const triggerRect = trigger.getBoundingClientRect();
+                const popoverRect = popover.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                let top = 0;
+                let left = 0;
+
+                // --- VERTICAL MATH ---
+                // Check if there is enough space BELOW the button for the popover
+                if (triggerRect.bottom + popoverRect.height + OFFSET < viewportHeight) {
+                    // Safe to open downwards
+                    top = triggerRect.bottom + OFFSET;
+                } else {
+                    // Not enough space below, force it to flip UPWARDS
+                    top = triggerRect.top - popoverRect.height - OFFSET;
+                }
+
+                // --- HORIZONTAL MATH ---
+                // Try to perfectly center the popover on the button
+                left = triggerRect.left + (triggerRect.width / 2) - (popoverRect.width / 2);
+
+                // Check if the centered popover bleeds off the LEFT screen edge
+                if (left < OFFSET) {
+                    left = triggerRect.left; // Align left edges instead
+                } 
+                // Check if the centered popover bleeds off the RIGHT screen edge
+                else if (left + popoverRect.width > viewportWidth - OFFSET) {
+                    left = triggerRect.right - popoverRect.width; // Align right edges instead
+                }
+
+                // 4. Apply the calculated safe coordinates
+                popover.style.top = `${top}px`;
+                popover.style.left = `${left}px`;
+                
+                // 5. Trigger the CSS transition animation
+                popover.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

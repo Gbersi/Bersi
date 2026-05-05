@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker with Memory</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f0f2f5; padding: 2rem; display: flex; justify-content: center; }
+        
+        .picker-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .header { margin-top: 0; color: #111; font-size: 1.2rem; margin-bottom: 1.5rem; }
+
+        /* Current Color Display */
+        .current-color-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .color-input-wrapper {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        /* Hide the ugly default input UI and make it fill the wrapper */
+        input[type="color"] {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            border: none;
+            padding: 0;
+        }
+
+        .hex-display {
+            font-family: monospace;
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* History Section */
+        .history-title {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .swatch-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 40px;
+        }
+
+        .swatch {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease;
+        }
+
+        .swatch:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="picker-card">
+        <h2 class="header">Theme Color</h2>
+        
+        <div class="current-color-container">
+            <div class="color-input-wrapper">
+                <input type="color" id="color-picker" value="#007bff">
+            </div>
+            <span class="hex-display" id="hex-output">#007BFF</span>
+        </div>
+
+        <div class="history-title">
+            <span>Recent Colors</span>
+            <button class="clear-btn" id="clear-history">Clear</button>
+        </div>
+        <div class="swatch-container" id="history-container">
+            <!-- Swatches will be injected here via JS -->
+        </div>
+    </div>
+
+    <script>
+        const colorPicker = document.getElementById('color-picker');
+        const hexOutput = document.getElementById('hex-output');
+        const historyContainer = document.getElementById('history-container');
+        const clearBtn = document.getElementById('clear-history');
+
+        // Configuration
+        const STORAGE_KEY = 'app_recent_colors';
+        const MAX_HISTORY = 10;
+        
+        // 1. Initialize State from LocalStorage (or use empty array)
+        let savedColors = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        // 2. Real-time update of the Hex text while dragging the color slider
+        colorPicker.addEventListener('input', (e) => {
+            hexOutput.textContent = e.target.value.toUpperCase();
+        });
+
+        // 3. Save the color only when the user finishes picking (closes the dialog)
+        colorPicker.addEventListener('change', (e) => {
+            const newColor = e.target.value.toLowerCase();
+            addColorToHistory(newColor);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            savedColors = [];
+            localStorage.removeItem(STORAGE_KEY);
+            renderHistory();
+        });
+
+        // --- Core Logic ---
+
+        function addColorToHistory(hexCode) {
+            // Remove the color if it already exists so we can bump it to the front
+            savedColors = savedColors.filter(color => color !== hexCode);
+            
+            // Add new color to the beginning of the array
+            savedColors.unshift(hexCode);
+            
+            // Cap the array size to MAX_HISTORY
+            if (savedColors.length > MAX_HISTORY) {
+                savedColors.pop();
+            }
+
+            // Save to browser memory
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(savedColors));
+            
+            renderHistory();
+        }
+
+        function renderHistory() {
+            historyContainer.innerHTML = ''; // Clear current swatches
+            
+            if (savedColors.length === 0) {
+                historyContainer.innerHTML = '<span style="color: #999; font-size: 0.85rem;">No recent colors.</span>';
+                return;
+            }
+
+            savedColors.forEach(hex => {
+                const swatch = document.createElement('div');
+                swatch.className = 'swatch';
+                swatch.style.backgroundColor = hex;
+                swatch.title = hex.toUpperCase();
+                
+                // Allow clicking a historical swatch to make it the active color again
+                swatch.addEventListener('click', () => {
+                    colorPicker.value = hex;
+                    hexOutput.textContent = hex.toUpperCase();
+                    addColorToHistory(hex); // Bumps it back to the front of the list
+                });
+
+                historyContainer.appendChild(swatch);
+            });
+        }
+
+        // Initial setup on page load
+        if (savedColors.length > 0) {
+            colorPicker.value = savedColors[0];
+            hexOutput.textContent = savedColors[0].toUpperCase();
+        }
+        renderHistory();
+
+    </script>
+</body>
+</html>

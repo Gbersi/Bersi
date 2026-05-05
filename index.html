@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCTV Design Tool - Bersi Security</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <!-- EMBEDDED CSS FOR NEW UI FEATURES (Toasts, Popovers, Right Sidebar) -->
+    <style>
+        /* Right Sidebar Styling */
+        .dark-panel { width: 340px; background-color: #2c323f; color: #e5e9f0; display: flex; flex-direction: column; border-left: 1px solid #1e222b; overflow-y: auto; position: absolute; right: 0; top: 0; height: 100%; z-index: 500; box-shadow: -4px 0 15px rgba(0,0,0,0.2); }
+        .dark-panel.hidden { display: none; }
+        .panel-header { display: flex; justify-content: space-between; padding: 15px 20px; background-color: #242933; border-bottom: 1px solid #1e222b; }
+        .panel-title { font-weight: bold; font-size: 1.1rem; }
+        .close-btn { background: none; border: none; color: #8892b0; font-size: 1.5rem; cursor: pointer; }
+        .panel-tabs { display: flex; background-color: #242933; padding: 0 10px; }
+        .tab-btn { flex: 1; background: none; border: none; color: #8892b0; padding: 10px 5px; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: #88c0d0; border-bottom: 2px solid #88c0d0; }
+        .panel-content { padding: 15px; }
+        .property-card { background-color: #3b4252; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #434c5e; }
+        .card-label { font-weight: bold; font-size: 0.9rem; color: #eceff4; margin-bottom: 5px; display: block; }
+        .sub-label { font-size: 0.8rem; color: #d8dee9; margin-bottom: 8px; display: block; }
+        .helper-text { font-size: 0.75rem; color: #e5c07b; margin-top: 0; margin-bottom: 10px; }
+        .dark-input { width: 100%; background-color: #2e3440; border: 1px solid #4c566a; color: white; padding: 8px 10px; border-radius: 4px; box-sizing: border-box; }
+        .slider-group { display: flex; align-items: center; gap: 15px; }
+        .slider-group input[type="range"] { flex-grow: 1; accent-color: #20c997; }
+        .input-with-unit { display: flex; background-color: #2e3440; border: 1px solid #4c566a; border-radius: 4px; overflow: hidden; width: 80px; }
+        .input-with-unit input[type="number"] { background: transparent; border: none; color: white; width: 100%; padding: 5px; text-align: right; outline: none; }
+        .input-with-unit .unit { padding: 5px 8px; background-color: #434c5e; color: #d8dee9; font-size: 0.8rem; border-left: 1px solid #4c566a; }
+        .angle-diagram-container { background-color: #1c2028; border-radius: 6px; height: 180px; margin-top: 15px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #111; }
+        .diagram-mockup { display: flex; flex-direction: column; color: #88c0d0; font-family: monospace; }
+        .btn-full-screen { position: absolute; bottom: 10px; background-color: #20c997; color: white; border: none; border-radius: 4px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; }
+        .btn-apply { width: 100%; background-color: #20c997; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        /* Tooltips, Toasts, and Colors */
+        #toast-container { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; }
+        .toast { width: 300px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); overflow: hidden; pointer-events: auto; transform: translateX(120%); animation: slideIn 0.3s forwards; }
+        .toast.closing { animation: slideOut 0.3s forwards; }
+        .toast-content { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #333; }
+        .toast-progress { height: 4px; width: 100%; transform-origin: left; animation: shrink linear forwards; }
+        .toast-success .toast-progress { background: #10b981; }
+        .toast-error .toast-progress { background: #ef4444; }
+        .toast-info .toast-progress { background: #3b82f6; }
+        @keyframes slideIn { to { transform: translateX(0); } }
+        @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
+        @keyframes shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+        #smart-popover { position: absolute; background: #212529; color: #ffffff; border-radius: 6px; padding: 8px 12px; font-size: 0.85rem; pointer-events: none; opacity: 0; z-index: 9999; transition: opacity 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        #smart-popover.active { opacity: 1; }
+        .color-input-wrapper { position: relative; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1); }
+        .color-input-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; border: none; }
+    </style>
+</head>
+<body>
+<!-- NEW: SPA LANDING OVERLAY -->
+    <div id="landing-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--bg-workspace); z-index:9999; display:flex; align-items:center; justify-content:center; transition: opacity 0.4s ease;">
+        <div style="background:var(--bg-panel); padding:40px; border-radius:var(--radius-lg); width:500px; box-shadow:var(--shadow-panel); border:1px solid var(--border); display: flex; flex-direction: column; gap: 20px;">
+            
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h1 style="color: var(--text-main); margin-bottom: 5px; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">New Project</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Upload your floorplans to setup the workspace.</p>
+            </div>
+
+            <div class="control-group" style="margin-bottom: 0;">
+                <label>Project Name</label>
+                <input type="text" id="project-name-input" class="dark-input" placeholder="e.g. Downtown Office Building">
+            </div>
+
+            <div class="control-group" style="margin-bottom: 0;">
+                <label>Project Blueprints</label>
+                <div id="landing-drop-zone" style="border: 2px dashed var(--accent); border-radius: var(--radius-md); padding: 30px; text-align: center; cursor: pointer; background: var(--bg-surface); transition: var(--transition);">
+                    <span style="color: var(--accent); font-weight: 600;">+ Click or Drag Multiple Files</span>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Supports PNG, JPG (Multi-select allowed)</div>
+                    <input type="file" id="landing-upload" accept="image/*" multiple style="display: none;">
+                </div>
+            </div>
+
+            <!-- Gallery for uploaded files -->
+            <div id="landing-gallery" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto;"></div>
+
+            <button id="launch-btn" class="action-btn btn-pdf" style="width: 100%; padding: 14px; font-size: 1rem; margin-top: 10px;">Launch Environment ➔</button>
+        </div>
+    </div>
+    <div id="navbar">
+        <div class="brand">BERSI.</div>
+        
+        <!-- NEW: Dynamic Project Name Display -->
+        <div id="active-project-name" style="font-size: 0.95rem; font-weight: 500; color: #6b7280; border-left: 1px solid #e5e7eb; padding-left: 15px; margin-right: auto;">
+            Untitled Project
+        </div>
+        
+        <button type="button" class="tool-btn popover-trigger" data-content="Edit Mode: Move and configure placed equipment" data-cat="select" onfocus="this.blur()" onclick="setCategory('select', this)">🖱️ <span data-i18n="nav_select">EDIT</span></button>
+        <div style="width: 1px; height: 30px; background: #e5e7eb; margin: 0 5px;"></div>
+        
+        <button type="button" class="tool-btn active popover-trigger" data-content="Place CCTV Cameras" data-cat="cctv" onfocus="this.blur()" onclick="setCategory('cctv', this)">📷 <span data-i18n="nav_cctv">CCTV</span></button>
+        <button type="button" class="tool-btn popover-trigger" data-content="Place Security Sensors" data-cat="security" onfocus="this.blur()" onclick="setCategory('security', this)">🛡️ <span data-i18n="nav_sec">SECURITY</span></button>
+        <button type="button" class="tool-btn popover-trigger" data-content="Place Access Control Readers" data-cat="access" onfocus="this.blur()" onclick="setCategory('access', this)">🔑 <span data-i18n="nav_acc">ACCESS</span></button>
+        <button type="button" class="tool-btn popover-trigger" data-content="Place Fire Alarm Devices" data-cat="fire" onfocus="this.blur()" onclick="setCategory('fire', this)">🔥 <span data-i18n="nav_fire">FIRE</span></button>
+        <button type="button" class="tool-btn popover-trigger" data-content="Place Gates and Barriers" data-cat="gate" onfocus="this.blur()" onclick="setCategory('gate', this)">🚧 <span data-i18n="nav_gate">GATES</span></button>
+        <button type="button" class="tool-btn popover-trigger" data-content="Draw Cable Routes" data-cat="cable" onfocus="this.blur()" onclick="setCategory('cable', this)">🔌 <span data-i18n="nav_cable">CABLING</span></button>
+        
+        <div class="lang-switch">
+            <button type="button" class="lang-btn active" onfocus="this.blur()" onclick="setLanguage('en')" id="btn-en">EN</button>
+            <button type="button" class="lang-btn" onfocus="this.blur()" onclick="setLanguage('is')" id="btn-is">IS</button>
+        </div>
+        
+        <div class="export-group" style="display: flex; gap: 8px;">
+            <button type="button" class="action-btn popover-trigger" data-content="Return to Dashboard" onfocus="this.blur()" onclick="window.location.href='landing.html'">🏠 Home</button>
+            <button type="button" class="action-btn" onfocus="this.blur()" onclick="exportLayout('jpg')">💾 <span data-i18n="btn_export_jpg">JPG</span></button>
+            <button type="button" class="action-btn btn-pdf" onfocus="this.blur()" onclick="exportLayout('pdf')">📄 <span data-i18n="btn_export_pdf">PDF</span></button>
+        </div>
+    </div>
+
+ <div id="container">
+        
+        <!-- LEFT SIDEBAR -->
+        <div id="sidebar">
+            <div class="control-group">
+                <label data-i18n="lbl_floorplan">1. Project Blueprints</label>
+                <div id="blueprint-list"></div>
+                <div id="drop-zone">
+                    <span style="font-size: 0.85rem; font-weight: 500; color: var(--accent);">+ Add Floorplan</span>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Drag & Drop or Click</div>
+                    <input type="file" id="upload" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="control-group" id="brand-selector-group">
+                <label data-i18n="lbl_brand">2. Manufacturer</label>
+                <select id="brandSelect"></select>
+            </div>
+
+            <div class="control-group" id="equip-selector-group">
+                <label data-i18n="lbl_equip">3. Equipment Type</label>
+                <select id="subCatSelect"></select>
+            </div>
+
+            <div class="control-group" id="product-list-group">
+                <label data-i18n="lbl_product">4. Select Product</label>
+                <div id="product-list-container" class="product-list"></div>
+            </div>
+
+            <div id="dynamic-controls">
+                <div class="control-group">
+                    <label><span id="fovLabelText" data-i18n="lbl_angle">Detection Angle</span> <span id="fovVal" class="val-badge">75°</span></label>
+                    <input type="range" id="fovInput" min="5" max="180" value="75">
+                </div>
+                <div class="control-group">
+                    <label><span id="distLabelText" data-i18n="lbl_range">Detection Range</span> <span id="distVal" class="val-badge">200px</span></label>
+                    <input type="range" id="distInput" min="10" max="800" value="200">
+                </div>
+            </div>
+
+            <div class="control-group" id="sens-group">
+                <label><span data-i18n="lbl_wall">Wall Sensitivity</span> <span id="sensVal" class="val-badge">100</span></label>
+                <input type="range" id="sensInput" min="0" max="255" value="100">
+            </div>
+
+            <button type="button" class="action-btn btn-danger" id="deleteBtn" onfocus="this.blur()" onclick="deleteSelected()">🗑️ <span data-i18n="btn_delete">DELETE SELECTED</span></button>
+            <div class="hint-box" id="mode-hint"></div>
+            
+            <div class="control-group" id="icon-picker-group">
+                <label data-i18n="lbl_icon">5. Map Icon</label>
+                <div id="icon-picker-list"></div>
+            </div>
+
+            <div class="control-group">
+                <label>6. Theme / Zone Color</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
+                    <div class="color-input-wrapper">
+                        <!-- Defaulted to your beautiful Teal color -->
+                        <input type="color" id="theme-color" value="#14b8a6"> 
+                    </div>
+                    <div id="history-container" style="display: flex; gap: 5px;"></div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label data-i18n="lbl_list">Equipment List (BOM)</label>
+                <div id="bom-list">
+                    <div style="color: var(--text-muted); font-size:0.8rem; text-align:center;" data-i18n="msg_empty">No equipment placed yet.</div>
+                </div>
+            </div>
+        </div> <!-- CRITICAL: THIS DIV CLOSES THE SIDEBAR PROPERLY -->
+
+        <!-- MAIN CANVAS -->
+        <div id="main">
+            <div class="canvas-container">
+                <canvas id="plannerCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR: Contextual Properties Panel -->
+        <div id="properties-panel" class="dark-panel hidden">
+          <!-- (Keep your existing properties panel code here) -->
+            <div class="panel-header">
+                <div class="panel-title">📷 Camera</div>
+                <button class="close-btn" onclick="document.getElementById('properties-panel').classList.add('hidden')">&times;</button>
+            </div>
+            
+            <div class="panel-tabs">
+                <button class="tab-btn"><span class="icon">⚙️</span> Settings</button>
+                <button class="tab-btn"><span class="icon">🌐</span> Network</button>
+                <button class="tab-btn active"><span class="icon">🖌️</span> Appearance</button>
+            </div>
+
+            <div class="panel-content">
+                <div class="property-card">
+                    <label class="card-label">🏷️ Display name:</label>
+                    <p class="helper-text">To show the display name, enable it in App Settings.</p>
+                    <input type="text" id="prop-display-name" class="dark-input" placeholder="Display name">
+                </div>
+
+                <div class="property-card">
+                    <label class="card-label">🧩 Icon Options</label>
+                    
+                    <label class="sub-label">Icon rotation</label>
+                    <div class="slider-group">
+                        <input type="range" id="prop-rotation-slider" min="0" max="360" value="0">
+                        <div class="input-with-unit">
+                            <input type="number" id="prop-rotation-num" value="0" min="0" max="360">
+                            <span class="unit">°</span>
+                        </div>
+                    </div>
+
+                    <label class="sub-label" style="margin-top: 15px;">Icon Size</label>
+                    <div class="slider-group">
+                        <input type="range" id="prop-size-slider" min="12" max="64" value="24">
+                        <div class="input-with-unit">
+                            <input type="number" id="prop-size-num" value="24" min="12" max="64">
+                            <span class="unit">px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <label class="card-label">📐 Angle</label>
+                    <div class="slider-group">
+                        <input type="range" id="prop-angle-slider" min="0" max="90" value="41">
+                        <div class="input-with-unit">
+                            <input type="number" id="prop-angle-num" value="41" min="0" max="90">
+                            <span class="unit">°</span>
+                        </div>
+                    </div>
+
+                    <div class="angle-diagram-container">
+                        <div class="diagram-mockup">
+                            <span class="diagram-text">Height: 3.00m</span>
+                            <span class="diagram-text">Angle: <span id="diagram-angle-text">41</span>°</span>
+                            <span class="diagram-text">Distance: ~13.08m</span>
+                        </div>
+                        <button class="btn-full-screen">⛶ Full Screen</button>
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <label class="card-label">↔️ Limit display range</label>
+                    <div class="slider-group">
+                        <input type="range" id="prop-range-slider" min="5" max="100" value="30">
+                        <div class="input-with-unit">
+                            <input type="number" id="prop-range-num" value="30" min="5" max="100">
+                            <span class="unit">m</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-apply">📋 Apply to other cameras</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHARED DOM ELEMENTS FOR NEW UI FEATURES -->
+    <div id="toast-container"></div>
+    <div id="smart-popover">
+        <div id="popover-text"></div>
+    </div>
+
+    <!-- MAIN APP MODULE -->
+    <script type="module" src="./js/app.js"></script>
+
+    <!-- NEW UI FEATURES SCRIPT -->
+    <script>
+        // --- NEW: FETCH AND DISPLAY PROJECT NAME ---
+        const projectNameElement = document.getElementById('active-project-name');
+        const savedProjectName = localStorage.getItem('bersi_current_project_name');
+        if (savedProjectName) {
+            projectNameElement.textContent = savedProjectName;
+        }
+
+        // 1. TOAST SYSTEM
+        const Toast = {
+            container: document.getElementById('toast-container'),
+            show(type, message, duration = 3000) {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.innerHTML = `
+                    <div class="toast-content">
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#999;">&times;</button>
+                    </div>
+                    <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+                `;
+                this.container.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.add('closing');
+                    toast.addEventListener('animationend', () => toast.remove());
+                }, duration);
+            }
+        };
+
+        // 2. POPOVER SYSTEM
+        const popover = document.getElementById('smart-popover');
+        const popoverText = document.getElementById('popover-text');
+        document.querySelectorAll('.popover-trigger').forEach(trigger => {
+            trigger.addEventListener('mouseenter', e => {
+                popoverText.textContent = trigger.getAttribute('data-content');
+                popover.style.display = 'block';
+                const rect = trigger.getBoundingClientRect();
+                popover.style.top = `${rect.bottom + 10}px`;
+                popover.style.left = `${rect.left}px`;
+                popover.classList.add('active');
+            });
+            trigger.addEventListener('mouseleave', () => {
+                popover.classList.remove('active');
+            });
+        });
+
+        // 3. COLOR PICKER MEMORY
+        const colorPicker = document.getElementById('theme-color');
+        const historyContainer = document.getElementById('history-container');
+        let savedColors = JSON.parse(localStorage.getItem('cctv_colors')) || ['#007bff'];
+
+        function renderHistory() {
+            historyContainer.innerHTML = '';
+            savedColors.forEach(hex => {
+                const swatch = document.createElement('div');
+                swatch.style.cssText = `width:25px; height:25px; border-radius:4px; cursor:pointer; background:${hex}; border: 1px solid #ccc;`;
+                swatch.onclick = () => { colorPicker.value = hex; };
+                historyContainer.appendChild(swatch);
+            });
+        }
+        colorPicker.addEventListener('change', e => {
+            savedColors = [e.target.value, ...savedColors.filter(c => c !== e.target.value)].slice(0, 5);
+            localStorage.setItem('cctv_colors', JSON.stringify(savedColors));
+            renderHistory();
+        });
+        renderHistory();
+
+        // 4. DRAG & DROP UI HELPERS
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('upload');
+        dropZone.onclick = () => fileInput.click();
+        dropZone.ondragover = e => { e.preventDefault(); dropZone.style.background = '#e9ecef'; };
+        dropZone.ondragleave = () => dropZone.style.background = '#f8f9fa';
+        dropZone.ondrop = e => {
+            e.preventDefault(); 
+            dropZone.style.background = '#f8f9fa';
+            if(e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'));
+                Toast.show('success', 'Floorplan loaded successfully!');
+            }
+        };
+
+        // 5. PROPERTIES PANEL LOGIC (Sliders sync)
+        function setupSyncedInputs(sliderId, numInputId, callback) {
+            const slider = document.getElementById(sliderId);
+            const numInput = document.getElementById(numInputId);
+            if (!slider || !numInput) return;
+
+            slider.addEventListener('input', (e) => {
+                numInput.value = e.target.value;
+                if(callback) callback(e.target.value);
+            });
+
+            numInput.addEventListener('input', (e) => {
+                let val = parseInt(e.target.value);
+                if (val < slider.min) val = slider.min;
+                if (val > slider.max) val = slider.max;
+                slider.value = val;
+                if(callback) callback(val);
+            });
+        }
+
+        setupSyncedInputs('prop-rotation-slider', 'prop-rotation-num');
+        setupSyncedInputs('prop-size-slider', 'prop-size-num');
+        setupSyncedInputs('prop-range-slider', 'prop-range-num');
+        setupSyncedInputs('prop-angle-slider', 'prop-angle-num', (val) => {
+            const diagText = document.getElementById('diagram-angle-text');
+            if(diagText) diagText.innerText = val;
+        });
+
+        // Test function: open the panel
+        window.openPropertiesPanel = function() {
+            document.getElementById('properties-panel').classList.remove('hidden');
+        };
+
+        // 6. MOCK API DEMO
+        window.mockApiCall = function() {
+            Toast.show('info', 'Saving to cloud...', 1500);
+            setTimeout(() => {
+                Toast.show('error', '401 Error: Token Expired. Intercepting...', 2500);
+                setTimeout(() => {
+                    Toast.show('success', 'Token refreshed! Project Saved.');
+                }, 2500);
+            }, 1500);
+        };
+    </script>
+</body>
+</html>

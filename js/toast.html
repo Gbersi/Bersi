@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast Notification Manager</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f0f2f5; padding: 2rem; }
+        
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        button {
+            padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;
+            font-weight: bold; color: white; transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.8; }
+        .btn-success { background: #10b981; }
+        .btn-error { background: #ef4444; }
+        .btn-warning { background: #f59e0b; }
+        .btn-info { background: #3b82f6; }
+
+        /* --- Toast System CSS --- */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+            pointer-events: none; /* Lets clicks pass through the container */
+        }
+
+        .toast {
+            width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            pointer-events: auto; /* Restores clicks for the toast itself */
+            transform: translateX(120%);
+            animation: slideIn 0.3s forwards cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+
+        .toast.closing {
+            animation: slideOut 0.3s forwards cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .toast-content {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toast-message { font-size: 0.95rem; color: #333; font-weight: 500; }
+        
+        .toast-close {
+            background: none; border: none; color: #999; font-size: 1.2rem;
+            cursor: pointer; padding: 0; line-height: 1; margin-left: 10px;
+        }
+        .toast-close:hover { color: #333; }
+
+        /* The Progress Bar */
+        .toast-progress {
+            height: 4px;
+            width: 100%;
+            background: #e5e7eb;
+            transform-origin: left;
+            animation: shrink linear forwards;
+        }
+
+        /* Color Themes */
+        .toast-success .toast-progress { background: #10b981; }
+        .toast-success .toast-message::before { content: '✅ '; }
+        
+        .toast-error .toast-progress { background: #ef4444; }
+        .toast-error .toast-message::before { content: '❌ '; }
+        
+        .toast-warning .toast-progress { background: #f59e0b; }
+        .toast-warning .toast-message::before { content: '⚠️ '; }
+        
+        .toast-info .toast-progress { background: #3b82f6; }
+        .toast-info .toast-message::before { content: 'ℹ️ '; }
+
+        /* Animations */
+        @keyframes slideIn {
+            to { transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            to { transform: translateX(120%); opacity: 0; }
+        }
+        @keyframes shrink {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Toast Notification Manager</h2>
+    <p>Click the buttons below to trigger dynamic DOM notifications.</p>
+
+    <div class="button-group">
+        <button class="btn-success" onclick="Toast.show('success', 'File uploaded successfully!', 3000)">Success</button>
+        <button class="btn-error" onclick="Toast.show('error', 'Failed to save changes.', 4000)">Error</button>
+        <button class="btn-warning" onclick="Toast.show('warning', 'Your session expires soon.', 5000)">Warning</button>
+        <button class="btn-info" onclick="Toast.show('info', 'New update available.', 3000)">Info</button>
+    </div>
+
+    <!-- The container where toasts will be injected -->
+    <div id="toast-container"></div>
+
+    <script>
+        const Toast = {
+            container: document.getElementById('toast-container'),
+
+            show(type, message, duration = 3000) {
+                // 1. Create the toast element
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+
+                // 2. Build the inner HTML
+                toast.innerHTML = `
+                    <div class="toast-content">
+                        <span class="toast-message">${message}</span>
+                        <button class="toast-close">&times;</button>
+                    </div>
+                    <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+                `;
+
+                // 3. Append to container
+                this.container.appendChild(toast);
+
+                // 4. Setup removal logic
+                let isClosing = false;
+
+                const removeToast = () => {
+                    if (isClosing) return;
+                    isClosing = true;
+                    
+                    // Trigger slide-out animation
+                    toast.classList.add('closing');
+                    
+                    // Wait for animation to finish before removing from DOM
+                    toast.addEventListener('animationend', (e) => {
+                        if (e.animationName === 'slideOut') {
+                            toast.remove();
+                        }
+                    });
+                };
+
+                // 5. Event listeners for closing
+                toast.querySelector('.toast-close').addEventListener('click', removeToast);
+                
+                // Auto-close after duration
+                setTimeout(removeToast, duration);
+            }
+        };
+    </script>
+</body>
+</html>
