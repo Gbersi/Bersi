@@ -18,16 +18,13 @@
         /* =========================================
            1. LANDING PAGE STYLES
            ========================================= */
-        #landing-page-container {
-            background-color: #F7F9FA; color: #1C1E21; height: 100vh; width: 100vw;
-            overflow-y: auto; overflow-x: hidden; position: absolute; top: 0; left: 0; z-index: 100;
-        }
+        #landing-page-container { background-color: #F7F9FA; color: #1C1E21; height: 100vh; width: 100vw; overflow-y: auto; overflow-x: hidden; position: absolute; top: 0; left: 0; z-index: 100; }
         #landing-nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); color: #FFFFFF; transition: background 0.3s; }
         #landing-nav.scrolled { background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
         .landing-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
         .landing-nav-links { display: flex; gap: 30px; font-weight: 600; font-size: 0.95rem; }
         .landing-nav-links a { color: #FFFFFF; text-decoration: none; transition: color 0.2s; cursor: pointer; }
-        .landing-nav-links a:hover { color: #a5b4fc; } /* Updated hover */
+        .landing-nav-links a:hover { color: #a5b4fc; }
         .hero { position: relative; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
         .slideshow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background-color: #000000; }
         .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out; }
@@ -35,33 +32,25 @@
         .hero-content { position: relative; z-index: 2; color: #FFFFFF; max-width: 800px; padding: 20px; }
         .hero-content h1 { font-size: 4.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; letter-spacing: -2px; }
         .hero-content p { font-size: 1.2rem; font-weight: 300; margin-bottom: 40px; color: #E4E6EB; }
-        
-        /* NEW INDIGO THEME */
         .btn-primary { background-color: #4f46e5; color: white; padding: 16px 36px; border-radius: 100px; font-size: 1.1rem; font-weight: 600; border: none; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
         .btn-primary:hover { background-color: #4338ca; transform: scale(1.05); }
         .highlight { color: #4f46e5; font-weight: 600; }
-        
         .about-section { background-color: #000000; color: #FFFFFF; padding: 100px 50px; }
         .about-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; align-items: center; }
         .about-image { width: 100%; aspect-ratio: 4/5; background-color: #1C1E21; border-radius: 24px; background-image: url('https://m.media-amazon.com/images/M/MV5BN2NkYWQzNGEtMzZiYS00NGJlLWJkNjYtNDc2YzJjNGY3YjgxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg'); background-size: cover; background-position: center center; }
         .about-text h2 { font-size: 3rem; font-weight: 800; margin-bottom: 20px; letter-spacing: -1px; }
         .about-text p { font-size: 1.1rem; line-height: 1.8; color: #B0B3B8; margin-bottom: 20px; font-weight: 300; }
-        
-        @media (max-width: 768px) { .hero-content h1 { font-size: 3rem; } .about-container { grid-template-columns: 1fr; } #landing-nav { padding: 20px; } }
 
         /* =========================================
-           2. ULTRA-MINIMALIST NAVBAR (Pill-in-Pill)
+           2. ULTRA-MINIMALIST NAVBAR & WORKSPACE
            ========================================= */
         #workspace-container { display: none; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; position: absolute; top: 0; left: 0; z-index: 200; background: #0b1120; }
-        #navbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 32px; width: 100vw; height: 70px; background: #0b1120; border-bottom: 1px solid rgba(255, 255, 255, 0.04); z-index: 500; }
+        #navbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 32px; width: 100vw; height: 70px; background: #0b1120; border-bottom: 1px solid rgba(255, 255, 255, 0.04); z-index: 500; flex-shrink: 0; }
         .navbar-left { display: flex; align-items: center; justify-content: flex-start; gap: 16px; }
         .navbar-center { display: flex; align-items: center; justify-content: center; gap: 2px; background: rgba(255, 255, 255, 0.03); padding: 4px; border-radius: 100px; border: 1px solid rgba(255, 255, 255, 0.03); }
         .navbar-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
         .brand { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; color: #ffffff; display: flex; align-items: center; gap: 8px; }
-        
-        /* Updated Icon Color for Indigo */
         .brand::before { content: ''; display: inline-block; width: 18px; height: 18px; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"/><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" fill="%234f46e5"/><circle cx="128" cy="128" r="40" fill="%234f46e5"/></svg>'); background-size: contain; background-repeat: no-repeat; opacity: 0.9; }
-        
         .project-name-badge { font-size: 0.8rem; font-weight: 500; color: #8b949e; padding: 4px 0; letter-spacing: 0.2px; cursor: pointer; transition: color 0.2s; }
         .project-name-badge:hover { color: #ffffff; }
         .tool-btn { display: flex; align-items: center; gap: 8px; background: transparent; border: none; color: #8b949e; padding: 8px 16px; font-size: 0.8rem; font-weight: 500; border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
@@ -83,79 +72,164 @@
         /* =========================================
            3. GLOBAL WORKSPACE RESKIN
            ========================================= */
-        body { background-color: #0b1120; color: #f9fafb; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        body { background-color: #0b1120; color: #f9fafb; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; margin: 0; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-        #sidebar { background-color: #0b1120; border-right: 1px solid rgba(255, 255, 255, 0.04); padding: 32px 24px; box-shadow: 10px 0 30px rgba(0,0,0,0.2); }
-        .control-group label { color: #8b949e; font-size: 0.75rem; letter-spacing: 0.5px; font-weight: 600; }
+        #container { display: flex; flex: 1; height: calc(100vh - 70px); position: relative; overflow: hidden; }
+        
+        #sidebar { width: 320px; background-color: #0b1120; border-right: 1px solid rgba(255, 255, 255, 0.04); padding: 24px; box-shadow: 10px 0 30px rgba(0,0,0,0.2); overflow-y: auto; flex-shrink: 0; }
+        .control-group { margin-bottom: 20px; }
+        .control-group label { color: #8b949e; font-size: 0.75rem; letter-spacing: 0.5px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .val-badge { background: rgba(255,255,255,0.05); color: #ffffff; border: 1px solid rgba(255,255,255,0.05); border-radius: 100px; padding: 2px 10px; font-weight: 500; }
 
-        /* FIX: Dropdowns now explicitly have dark backgrounds to contrast white text */
-        select, input[type="text"], input[type="number"], .dark-input { background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); color: #ffffff; border-radius: 12px; padding: 12px 16px; font-weight: 500; transition: all 0.2s ease; }
-        select:focus, input[type="text"]:focus, .dark-input:focus { border-color: #ffffff; background-color: rgba(255, 255, 255, 0.05); outline: none; box-shadow: none; }
-        
-        /* THIS RULES FIXES THE WHITE-ON-WHITE ISSUE IN THE SELECT DROPDOWN */
+        select, input[type="text"], input[type="number"], .dark-input { width: 100%; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); color: #ffffff; border-radius: 12px; padding: 12px 16px; font-weight: 500; transition: all 0.2s ease; }
+        select:focus, input[type="text"]:focus, .dark-input:focus { border-color: #ffffff; background-color: rgba(255, 255, 255, 0.05); outline: none; }
         select option { background-color: #1f2937; color: #ffffff; }
+        input[type="range"] { width: 100%; background: rgba(255,255,255,0.1); height: 4px; border-radius: 4px; border: none; -webkit-appearance: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; background: #ffffff; width: 16px; height: 16px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.3); cursor: pointer; }
 
-        input[type="range"] { background: rgba(255,255,255,0.1); height: 4px; border-radius: 4px; border: none; }
-        input[type="range"]::-webkit-slider-thumb { background: #ffffff; width: 16px; height: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: none; }
-
-        /* Lists & Cards */
-        .blueprint-item, .product-item, .bom-item { background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; padding: 14px; transition: all 0.2s ease; margin-bottom: 8px; }
+        .blueprint-item, .product-item, .bom-item { background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; padding: 14px; transition: all 0.2s ease; margin-bottom: 8px; cursor: pointer; }
         .blueprint-item:hover, .product-item:hover { background-color: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); transform: translateY(-1px); }
         .blueprint-item.active, .product-item.active { background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); }
-        .product-img { background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        #drop-zone, #landing-drop-zone { background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 16px; transition: all 0.2s ease; }
+        
+        .product-item { display: flex; gap: 12px; align-items: center; }
+        .product-img { background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .product-img img { width: 100%; height: 100%; object-fit: cover; }
+        .product-info { display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .product-name { font-size: 0.85rem; font-weight: 600; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-desc { font-size: 0.75rem; color: #8b949e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-specs { font-size: 0.7rem; color: #4f46e5; font-weight: 600; }
+
+        #drop-zone, #landing-drop-zone { background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 16px; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; cursor: pointer; }
         #drop-zone:hover, #landing-drop-zone:hover { background: rgba(255, 255, 255, 0.05); border-color: #ffffff; }
 
-        /* Delete Blueprint Button Hover Animation */
         .delete-bp-btn:hover { transform: scale(1.2); }
 
-        /* Right Properties Panel */
-        .dark-panel { background: rgba(11, 17, 32, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-left: 1px solid rgba(255, 255, 255, 0.05); box-shadow: -10px 0 40px rgba(0,0,0,0.4); }
-        .panel-header { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 20px 24px; }
+        .dark-panel { position: absolute; right: 0; top: 0; width: 340px; height: 100%; background: rgba(11, 17, 32, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-left: 1px solid rgba(255, 255, 255, 0.05); box-shadow: -10px 0 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; z-index: 400; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .dark-panel.hidden { transform: translateX(100%); }
+        
+        .panel-header { display: flex; justify-content: space-between; align-items: center; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 20px 24px; }
         .panel-title { font-weight: 700; color: #fff; font-size: 1.1rem; }
+        .close-btn { background: none; border: none; color: #8b949e; font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
+        .close-btn:hover { color: #fff; }
+        
         .panel-tabs { background: rgba(255,255,255,0.03); margin: 16px 20px; border-radius: 100px; padding: 4px; border: 1px solid rgba(255,255,255,0.03); display: flex; gap: 2px; }
-        .tab-btn { border-radius: 100px; border: none; font-size: 0.75rem; font-weight: 600; padding: 8px; color: #8b949e; }
-        .tab-btn.active { background: rgba(255,255,255,0.1); color: #fff; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .property-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 20px; box-shadow: none; }
-        .input-with-unit { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; }
-        .input-with-unit .unit { background: transparent; border-left: 1px solid rgba(255,255,255,0.05); color: #8b949e; }
-        .angle-diagram-container { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; }
+        .tab-btn { flex: 1; border-radius: 100px; border: none; background: transparent; font-size: 0.75rem; font-weight: 600; padding: 8px; color: #8b949e; cursor: pointer; transition: all 0.2s; }
+        .tab-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        
+        .panel-content { padding: 0 20px 20px 20px; overflow-y: auto; flex: 1; }
+        .property-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+        .card-label { display: block; font-weight: 600; font-size: 0.9rem; color: #fff; margin-bottom: 6px; }
+        .sub-label { display: block; font-size: 0.8rem; color: #8b949e; margin-bottom: 8px; }
+        .helper-text { font-size: 0.75rem; color: #a1a1aa; margin-top: 0; margin-bottom: 12px; }
+        
+        .slider-group { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .input-with-unit { display: flex; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; width: 80px; overflow: hidden; }
+        .input-with-unit input { background: transparent; border: none; color: #fff; width: 100%; padding: 8px; text-align: right; outline: none; font-weight: 600; -moz-appearance: textfield; }
+        .input-with-unit input::-webkit-outer-spin-button, .input-with-unit input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .input-with-unit .unit { padding: 8px; background: transparent; border-left: 1px solid rgba(255,255,255,0.05); color: #8b949e; font-size: 0.8rem; display: flex; align-items: center; }
+        
+        .angle-diagram-container { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; height: 160px; margin-top: 16px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .diagram-mockup { display: flex; flex-direction: column; color: #4f46e5; font-family: monospace; font-size: 0.85rem; text-align: center; line-height: 1.5; }
+        .btn-full-screen { position: absolute; bottom: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 100px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; transition: background 0.2s; }
+        .btn-full-screen:hover { background: rgba(255,255,255,0.1); }
 
-        /* General UI Buttons */
-        .btn-apply, .btn-danger, #launch-btn { border-radius: 100px; font-weight: 600; padding: 12px 24px; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-apply, .btn-danger, #launch-btn { width: 100%; border-radius: 100px; font-weight: 600; padding: 12px 24px; transition: all 0.2s; border: none; cursor: pointer; text-align: center; }
         .btn-apply, #launch-btn { background: #ffffff; color: #000000; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
         .btn-apply:hover, #launch-btn:hover { opacity: 0.9; transform: scale(0.98); }
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .btn-danger { display: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); margin-top: 10px; }
+        .btn-danger.visible { display: block; }
         .btn-danger:hover { background: #ef4444; color: white; transform: scale(0.98); }
 
-        /* Canvas Subtlety */
-        #main { background-color: #05080f; background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px); background-size: 32px 32px; }
-        .canvas-container { border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); overflow: hidden; }
+        #main { flex: 1; background-color: #05080f; background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px); background-size: 32px 32px; padding: 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .canvas-container { border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); overflow: hidden; background: #000; max-width: 100%; max-height: 100%; display: flex; }
+        canvas { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        /* Smart Popovers & Toasts */
-        #smart-popover { position: absolute; background: rgba(255,255,255,0.95); color: #000; border-radius: 8px; padding: 8px 12px; font-size: 0.8rem; font-weight: 600; pointer-events: none; opacity: 0; z-index: 9999; transition: opacity 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        #smart-popover.active { opacity: 1; }
-        #toast-container { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; }
-        .toast { width: 300px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; pointer-events: auto; transform: translateX(120%); animation: slideIn 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1); color: #fff;}
-        .toast.closing { animation: slideOut 0.3s forwards; }
-        .toast-content { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 500; }
-        .toast-progress { height: 3px; width: 100%; transform-origin: left; animation: shrink linear forwards; }
-        .toast-success .toast-progress { background: #ffffff; }
-        .toast-error .toast-progress { background: #ef4444; }
-        .toast-info .toast-progress { background: #4f46e5; }
-        @keyframes slideIn { to { transform: translateX(0); } }
-        @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
-        @keyframes shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-        .color-input-wrapper { position: relative; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.2); }
-        .color-input-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; border: none; }
+        .color-input-wrapper { position: relative; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.2); flex-shrink: 0; }
+        .color-input-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; border: none; padding: 0; }
+
+        #icon-picker-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .icon-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; overflow: hidden; }
+        .icon-btn img { max-width: 70%; max-height: 70%; object-fit: contain; }
+        .icon-btn.active { border-color: #4f46e5; background: rgba(79, 70, 229, 0.2); box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+
+        .hidden { display: none !important; }
+
+        /* =========================================
+           4. MOBILE OPTIMIZATION (App-like UX)
+           ========================================= */
+        @media (max-width: 820px) {
+            /* Landing Page Mobile Fixes */
+            #landing-nav { padding: 16px 20px; }
+            .landing-nav-links { display: none; } /* Simplify nav */
+            .hero-content h1 { font-size: 2.8rem; }
+            .about-container { grid-template-columns: 1fr; }
+            
+            /* Overlay Scale */
+            #landing-overlay > div { width: 90vw !important; padding: 24px !important; }
+
+            /* WORKSPACE MOBILE LAYOUT */
+            #workspace-container { height: 100dvh; } /* Handle mobile browser bars */
+            
+            /* Navbar Adjustments */
+            #navbar { display: flex; justify-content: space-between; padding: 0 16px; height: 60px; }
+            .brand { font-size: 1rem; }
+            #active-project-name { display: none; } /* Save space */
+            .action-btn span, .lang-switch { display: none; } /* Hide text on buttons */
+            .export-group { gap: 6px; }
+            .action-btn { padding: 8px 12px; }
+
+            /* Show Hamburger Menu */
+            #mobile-menu-btn { display: flex !important; }
+
+            /* Move Toolbelt to Floating Bottom Dock */
+            .navbar-center { 
+                position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                width: 90vw; max-width: 400px; padding: 8px;
+                background: rgba(11, 17, 32, 0.90); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+                border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+                z-index: 1000; justify-content: flex-start; overflow-x: auto;
+                -ms-overflow-style: none; scrollbar-width: none; border-radius: 20px;
+            }
+            .navbar-center::-webkit-scrollbar { display: none; } /* Hide native scrollbar */
+            
+            .tool-btn { flex-direction: column; gap: 4px; padding: 8px 12px; flex-shrink: 0; border-radius: 12px; }
+            .tool-btn i { font-size: 1.4rem; }
+            .tool-btn span { font-size: 0.6rem; letter-spacing: 0; }
+
+            /* Main Layout Adjustments */
+            #container { flex-direction: column; height: calc(100dvh - 60px); }
+            #main { padding: 10px; padding-bottom: 90px; } /* Leave space for bottom dock */
+
+            /* Slide-out Sidebar Overlay */
+            #sidebar { 
+                position: fixed; top: 60px; left: -100%; height: calc(100dvh - 60px); 
+                width: 100vw; max-width: 320px; z-index: 900; transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+                box-shadow: 20px 0 50px rgba(0,0,0,0.5); padding-bottom: 40px; 
+            }
+            #sidebar.mobile-open { left: 0; }
+
+            /* Bottom Sheet Properties Panel */
+            .dark-panel {
+                width: 100%; top: auto; bottom: 0; height: 75dvh; 
+                border-radius: 24px 24px 0 0; border-left: none; border-top: 1px solid rgba(255,255,255,0.05);
+                transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1100;
+            }
+            .dark-panel:not(.hidden) { transform: translateY(0); }
+            .dark-panel.hidden { display: flex !important; transform: translateY(100%); } /* Keep display flex to allow animation */
+            
+            #toast-container { top: 70px; left: 50%; right: auto; transform: translateX(-50%); width: 90vw; }
+            .toast { width: 100%; transform: translateY(-120%); animation: slideDown 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1); }
+            .toast.closing { animation: slideUp 0.3s forwards; }
+            @keyframes slideDown { to { transform: translateY(0); } }
+            @keyframes slideUp { to { transform: translateY(-120%); opacity: 0; } }
+        }
     </style>
 </head>
 
-<body style="margin: 0; overflow-x: hidden;">
+<body>
 
     <!-- =======================================================
          VIEW 1: THE LANDING PAGE
@@ -167,6 +241,9 @@
                 <a onclick="openWorkspace()">Platform</a>
                 <a href="#about">About</a>
             </div>
+            <!-- Mobile Launch Button (Hidden on Desktop) -->
+            <button class="btn-primary" style="padding: 8px 20px; font-size: 0.9rem;" onclick="openWorkspace()" id="mobile-hero-btn">Launch</button>
+            <style>@media(min-width: 821px){#mobile-hero-btn{display:none;}}</style>
         </nav>
 
         <header class="hero">
@@ -217,9 +294,9 @@
 
                 <div class="control-group" style="margin-bottom: 0; margin-top: 15px;">
                     <label>Project Blueprints</label>
-                    <div id="landing-drop-zone" style="padding: 30px; text-align: center; cursor: pointer; margin-top: 8px;">
-                        <span style="color: #ffffff; font-weight: 600;">+ Click or Drag Multiple Files</span>
-                        <div style="font-size: 0.75rem; color: #8b949e; margin-top: 6px;">Supports PNG, JPG (Multi-select allowed)</div>
+                    <div id="landing-drop-zone" style="margin-top: 8px;">
+                        <span style="color: #ffffff; font-weight: 600;">+ Click or Drag Files</span>
+                        <div style="font-size: 0.75rem; color: #8b949e; margin-top: 6px;">Supports PNG, JPG</div>
                         <input type="file" id="landing-upload" accept="image/*" multiple style="display: none;">
                     </div>
                 </div>
@@ -227,57 +304,60 @@
                 <!-- Gallery for uploaded files -->
                 <div id="landing-gallery" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto;"></div>
 
-                <button id="launch-btn" style="width: 100%; margin-top: 10px;">Launch Environment ➔</button>
+                <button id="launch-btn" style="margin-top: 10px;">Launch Environment ➔</button>
             </div>
         </div>
 
-        <!-- WORKSPACE NAVBAR (PILL-IN-PILL MINIMALIST) -->
+        <!-- WORKSPACE NAVBAR -->
         <div id="navbar">
             <div class="navbar-left">
-                <div class="brand">BERSI.</div> <!-- Restored BERSI. text -->
-                <div id="active-project-name" class="project-name-badge">
-                    Untitled Project
-                </div>
+                <!-- Mobile Hamburger Menu Button -->
+                <button type="button" id="mobile-menu-btn" class="action-btn" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')" style="display: none; padding: 8px 12px; border:none; background:rgba(255,255,255,0.05); color:#fff;">
+                    <i class="ph ph-list" style="font-size: 1.2rem;"></i>
+                </button>
+                
+                <div class="brand">BERSI.</div>
+                <div id="active-project-name" class="project-name-badge">Untitled Project</div>
             </div>
             
-            <div class="navbar-center">
-                <button type="button" class="tool-btn popover-trigger" data-content="Edit Mode: Move and configure placed equipment" data-cat="select" onfocus="this.blur()" onclick="setCategory('select', this)">
+            <div class="navbar-center" id="mobile-dock">
+                <button type="button" class="tool-btn popover-trigger" data-content="Edit Mode: Move and configure placed equipment" data-cat="select" onclick="setCategory('select', this); closeMobileMenu();">
                     <i class="ph ph-cursor-click"></i> <span data-i18n="nav_select">EDIT</span>
                 </button>
-                <button type="button" class="tool-btn active popover-trigger" data-content="Place CCTV Cameras" data-cat="cctv" onfocus="this.blur()" onclick="setCategory('cctv', this)">
+                <button type="button" class="tool-btn active popover-trigger" data-content="Place CCTV Cameras" data-cat="cctv" onclick="setCategory('cctv', this); closeMobileMenu();">
                     <i class="ph ph-video-camera"></i> <span data-i18n="nav_cctv">CCTV</span>
                 </button>
-                <button type="button" class="tool-btn popover-trigger" data-content="Place Security Sensors" data-cat="security" onfocus="this.blur()" onclick="setCategory('security', this)">
+                <button type="button" class="tool-btn popover-trigger" data-content="Place Security Sensors" data-cat="security" onclick="setCategory('security', this); closeMobileMenu();">
                     <i class="ph ph-shield-check"></i> <span data-i18n="nav_sec">SECURITY</span>
                 </button>
-                <button type="button" class="tool-btn popover-trigger" data-content="Place Access Control Readers" data-cat="access" onfocus="this.blur()" onclick="setCategory('access', this)">
+                <button type="button" class="tool-btn popover-trigger" data-content="Place Access Control Readers" data-cat="access" onclick="setCategory('access', this); closeMobileMenu();">
                     <i class="ph ph-identification-card"></i> <span data-i18n="nav_acc">ACCESS</span>
                 </button>
-                <button type="button" class="tool-btn popover-trigger" data-content="Place Fire Alarm Devices" data-cat="fire" onfocus="this.blur()" onclick="setCategory('fire', this)">
+                <button type="button" class="tool-btn popover-trigger" data-content="Place Fire Alarm Devices" data-cat="fire" onclick="setCategory('fire', this); closeMobileMenu();">
                     <i class="ph ph-fire"></i> <span data-i18n="nav_fire">FIRE</span>
                 </button>
-                <button type="button" class="tool-btn popover-trigger" data-content="Place Gates and Barriers" data-cat="gate" onfocus="this.blur()" onclick="setCategory('gate', this)">
+                <button type="button" class="tool-btn popover-trigger" data-content="Place Gates and Barriers" data-cat="gate" onclick="setCategory('gate', this); closeMobileMenu();">
                     <i class="ph ph-boom-tube"></i> <span data-i18n="nav_gate">GATES</span>
                 </button>
-                <button type="button" class="tool-btn popover-trigger" data-content="Draw Cable Routes" data-cat="cable" onfocus="this.blur()" onclick="setCategory('cable', this)">
+                <button type="button" class="tool-btn popover-trigger" data-content="Draw Cable Routes" data-cat="cable" onclick="setCategory('cable', this); closeMobileMenu();">
                     <i class="ph ph-bezier-curve"></i> <span data-i18n="nav_cable">CABLING</span>
                 </button>
             </div>
             
             <div class="navbar-right">
                 <div class="lang-switch">
-                    <button type="button" class="lang-btn active" onfocus="this.blur()" onclick="setLanguage('en')" id="btn-en">EN</button>
-                    <button type="button" class="lang-btn" onfocus="this.blur()" onclick="setLanguage('is')" id="btn-is">IS</button>
+                    <button type="button" class="lang-btn active" onclick="setLanguage('en')" id="btn-en">EN</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('is')" id="btn-is">IS</button>
                 </div>
                 
                 <div class="export-group">
-                    <button type="button" class="action-btn popover-trigger" data-content="Return to Dashboard" onfocus="this.blur()" onclick="returnToHome()">
-                        <i class="ph ph-house"></i> Home
+                    <button type="button" class="action-btn popover-trigger" data-content="Return to Dashboard" onclick="returnToHome()">
+                        <i class="ph ph-house"></i> <span>Home</span>
                     </button>
-                    <button type="button" class="action-btn" onfocus="this.blur()" onclick="exportLayout('jpg')">
+                    <button type="button" class="action-btn" onclick="exportLayout('jpg')">
                         <i class="ph ph-image"></i> <span data-i18n="btn_export_jpg">JPG</span>
                     </button>
-                    <button type="button" class="action-btn btn-pdf" onfocus="this.blur()" onclick="exportLayout('pdf')">
+                    <button type="button" class="action-btn btn-pdf" onclick="exportLayout('pdf')">
                         <i class="ph ph-file-pdf"></i> <span data-i18n="btn_export_pdf">PDF</span>
                     </button>
                 </div>
@@ -329,7 +409,7 @@
                     <input type="range" id="sensInput" min="0" max="255" value="100">
                 </div>
 
-                <button type="button" class="btn-danger" id="deleteBtn" onfocus="this.blur()" onclick="deleteSelected()">🗑️ <span data-i18n="btn_delete">DELETE SELECTED</span></button>
+                <button type="button" class="btn-danger" id="deleteBtn" onclick="deleteSelected()">🗑️ <span data-i18n="btn_delete">DELETE SELECTED</span></button>
                 <div class="hint-box" id="mode-hint" style="margin-top: 15px; font-size: 0.8rem; color: #8b949e;"></div>
                 
                 <div class="control-group" id="icon-picker-group">
@@ -356,7 +436,7 @@
             </div> 
 
             <!-- CANVAS -->
-            <div id="main">
+            <div id="main" onclick="closeMobileMenu()">
                 <div class="canvas-container">
                     <canvas id="plannerCanvas"></canvas>
                 </div>
@@ -419,7 +499,7 @@
                                 <span class="diagram-text">Angle: <span id="diagram-angle-text">41</span>°</span>
                                 <span class="diagram-text">Distance: ~13.08m</span>
                             </div>
-                            <button class="btn-full-screen" style="bottom: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff;">⛶ Full Screen</button>
+                            <button class="btn-full-screen">⛶ Full Screen</button>
                         </div>
                     </div>
 
@@ -464,6 +544,13 @@
             document.body.style.overflow = '';
         }
 
+        // Auto-close sidebar on mobile when interacting with canvas/tools
+        window.closeMobileMenu = () => {
+            if (window.innerWidth <= 820) {
+                document.getElementById('sidebar').classList.remove('mobile-open');
+            }
+        };
+
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('landing-nav');
             if (window.scrollY > 50) nav.classList.add('scrolled');
@@ -488,7 +575,7 @@
                 toast.innerHTML = `
                     <div class="toast-content">
                         <span>${message}</span>
-                        <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#999;">&times;</button>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#999;font-size:1.2rem;">&times;</button>
                     </div>
                     <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
                 `;
@@ -501,21 +588,26 @@
         };
         window.Toast = Toast; 
 
+        // Smart Popover (Disable on touch devices to prevent stuck tooltips)
         const popover = document.getElementById('smart-popover');
         const popoverText = document.getElementById('popover-text');
-        document.querySelectorAll('.popover-trigger').forEach(trigger => {
-            trigger.addEventListener('mouseenter', e => {
-                popoverText.textContent = trigger.getAttribute('data-content');
-                popover.style.display = 'block';
-                const rect = trigger.getBoundingClientRect();
-                popover.style.top = `${rect.bottom + 10}px`;
-                popover.style.left = `${rect.left}px`;
-                popover.classList.add('active');
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        
+        if (!isTouchDevice) {
+            document.querySelectorAll('.popover-trigger').forEach(trigger => {
+                trigger.addEventListener('mouseenter', e => {
+                    popoverText.textContent = trigger.getAttribute('data-content');
+                    popover.style.display = 'block';
+                    const rect = trigger.getBoundingClientRect();
+                    popover.style.top = `${rect.bottom + 10}px`;
+                    popover.style.left = `${rect.left}px`;
+                    popover.classList.add('active');
+                });
+                trigger.addEventListener('mouseleave', () => {
+                    popover.classList.remove('active');
+                });
             });
-            trigger.addEventListener('mouseleave', () => {
-                popover.classList.remove('active');
-            });
-        });
+        }
 
         const colorPicker = document.getElementById('theme-color');
         const historyContainer = document.getElementById('history-container');
