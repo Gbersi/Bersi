@@ -21,9 +21,9 @@ const productDB = {
 const categoryIcons = {
     cctv: ['icons/cctv/cctv1.png', 'icons/cctv/cctv2.png', 'icons/cctv/cctv3.png', 'icons/cctv/cctv4.png', 'icons/cctv/cctv5.png', 'icons/cctv/cctv6.png', 'icons/cctv/cctv7.png', 'icons/cctv/cctv8.png', 'icons/cctv/cctv9.png', 'icons/cctv/cctv10.png', 'icons/cctv/cctv11.avif', 'icons/cctv/cctv12.jpg', 'icons/cctv/cctv13.png', 'icons/cctv/cctv14.jpg'],
     security: ['icons/security/security1.png', 'icons/security/security2.jpg', 'icons/security/security3.jpg', 'icons/security/security4.webp', 'icons/security/security5.png', 'icons/security/security6.jpg', 'icons/security/security7.png', 'icons/security/security8.webp', 'icons/security/security9.png', 'icons/security/security10.png'],
-    access: ['icons/access/reader.png', 'icons/access/keypad.png', 'icons/access/lock.png'],
-    fire: ['icons/fire/smoke.png', 'icons/fire/heat.png', 'icons/fire/mcp.png'],
-    gate: ['icons/gate/barrier.png', 'icons/gate/gate.png', 'icons/gate/turnstile.png']
+    access: ['icons/access/access1.png', 'icons/access/access2.webp','icons/access/access3.png','icons/access/access4.png','icons/access/access5.png','icons/access/access6.png','icons/access/access7.png','icons/access/access8.png','icons/access/access9.png',],
+    fire: ['icons/fire/fire1.jpg', 'icons/fire/fire2.png', 'icons/fire/fire3.png','icons/fire/fire4.png','icons/fire/fire5.png','icons/fire/fire6.png','icons/fire/fire7.png','icons/fire/fire8.png','icons/fire/fire9.png','icons/fire/fire10.png'],
+    gate: ['icons/gate/gate1.png', 'icons/gate/gate2.jpg', 'icons/gate/gate3.jpg', 'icons/gate/gate4.png', 'icons/gate/gate5.png', 'icons/gate/gate6.png', 'icons/gate/gate7.webp', 'icons/gate/gate8.png', 'icons/gate/gate9.png', 'icons/gate/gate10.jpg']
 };
 
 // Pre-load images into memory for instant Canvas drawing
