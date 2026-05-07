@@ -5,23 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bersi Security | System Design Platform</title>
     
-    <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Main Workspace Stylesheet -->
     <link rel="stylesheet" href="./css/style.css">
     
-    <!-- COMBINED EMBEDDED CSS -->
     <style>
-        /* =========================================
-           1. LANDING PAGE STYLES
-           ========================================= */
+        /* CSS Trick to remove solid white backgrounds from the logos */
+        .blend-logo-dark, .blend-logo-dynamic {
+            mix-blend-mode: screen;
+            filter: invert(1);
+        }
+        body.light-mode .blend-logo-dynamic {
+            mix-blend-mode: multiply;
+            /* This forces the logo to be black/dark in light mode, ensuring it is always visible! */
+            filter: brightness(0); 
+        }
+
+        /* 1. LANDING PAGE STYLES */
         #landing-page-container { background-color: #F7F9FA; color: #1C1E21; height: 100vh; width: 100vw; overflow-y: auto; overflow-x: hidden; position: absolute; top: 0; left: 0; z-index: 100; }
         #landing-nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); color: #FFFFFF; transition: background 0.3s; }
         #landing-nav.scrolled { background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
-        .landing-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
+        .landing-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
         .landing-nav-links { display: flex; gap: 30px; font-weight: 600; font-size: 0.95rem; }
         .landing-nav-links a { color: #FFFFFF; text-decoration: none; transition: color 0.2s; cursor: pointer; }
         .landing-nav-links a:hover { color: #a5b4fc; }
@@ -29,6 +35,9 @@
         .slideshow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background-color: #000000; }
         .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out; }
         .slide.active { opacity: 0.6; }
+        
+        video.slide { width: 100%; height: 100%; object-fit: cover; }
+
         .hero-content { position: relative; z-index: 2; color: #FFFFFF; max-width: 800px; padding: 20px; }
         .hero-content h1 { font-size: 4.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; letter-spacing: -2px; }
         .hero-content p { font-size: 1.2rem; font-weight: 300; margin-bottom: 40px; color: #E4E6EB; }
@@ -41,17 +50,14 @@
         .about-text h2 { font-size: 3rem; font-weight: 800; margin-bottom: 20px; letter-spacing: -1px; }
         .about-text p { font-size: 1.1rem; line-height: 1.8; color: #B0B3B8; margin-bottom: 20px; font-weight: 300; }
 
-        /* =========================================
-           2. ULTRA-MINIMALIST NAVBAR & WORKSPACE
-           ========================================= */
+        /* 2. ULTRA-MINIMALIST NAVBAR & WORKSPACE */
         #workspace-container { display: none; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; position: absolute; top: 0; left: 0; z-index: 200; background: #0b1120; }
         #navbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 32px; width: 100vw; height: 70px; background: #0b1120; border-bottom: 1px solid rgba(255, 255, 255, 0.04); z-index: 500; flex-shrink: 0; transition: background 0.3s, border-color 0.3s; }
         .navbar-left { display: flex; align-items: center; justify-content: flex-start; gap: 16px; }
         .navbar-center { display: flex; align-items: center; justify-content: center; gap: 2px; background: rgba(255, 255, 255, 0.03); padding: 4px; border-radius: 100px; border: 1px solid rgba(255, 255, 255, 0.03); transition: all 0.3s; }
         .navbar-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
         
-        .brand { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; color: #ffffff; display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
-        .brand::before { content: ''; display: inline-block; width: 18px; height: 18px; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"/><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" fill="%234f46e5"/><circle cx="128" cy="128" r="40" fill="%234f46e5"/></svg>'); background-size: contain; background-repeat: no-repeat; opacity: 0.9; }
+        .brand { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; color: #ffffff; display: flex; align-items: center; gap: 6px; transition: color 0.3s; }
         .project-name-badge { font-size: 0.8rem; font-weight: 500; color: #8b949e; padding: 4px 0; letter-spacing: 0.2px; cursor: pointer; transition: color 0.2s; }
         .project-name-badge:hover { color: #ffffff; }
         
@@ -59,6 +65,7 @@
         .tool-btn i { font-size: 1.1rem; }
         .tool-btn:hover { color: #ffffff; }
         .tool-btn.active { color: #ffffff; background: rgba(255, 255, 255, 0.12); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .tool-btn[data-cat="scale"].active { background: rgba(236, 72, 153, 0.2); color: #ec4899; box-shadow: 0 2px 12px rgba(236, 72, 153, 0.2); border: 1px solid rgba(236, 72, 153, 0.3); } 
         
         .export-group { display: flex; gap: 8px; align-items: center; }
         .action-btn { display: flex; align-items: center; gap: 6px; background-color: transparent; color: #a1a1aa; border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; font-size: 0.8rem; font-weight: 500; border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
@@ -73,9 +80,7 @@
         .lang-btn:hover { color: #ffffff; }
         .lang-btn.active { background: rgba(255,255,255,0.1); color: #ffffff; }
 
-        /* =========================================
-           3. GLOBAL WORKSPACE RESKIN
-           ========================================= */
+        /* 3. GLOBAL WORKSPACE RESKIN */
         body { background-color: #0b1120; color: #f9fafb; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; margin: 0; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 10px; }
@@ -136,7 +141,7 @@
         
         .slider-group { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
         .input-with-unit { display: flex; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; width: 80px; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
-        .input-with-unit input { background: transparent; border: none; color: #fff; width: 100%; padding: 8px; text-align: right; outline: none; font-weight: 600; -moz-appearance: textfield; transition: color 0.3s; }
+        .input-with-unit input { background: transparent; border: none; color: #fff; width: 100%; padding: 8px; text-align: right; outline: none; font-weight: 600; appearance: none; -webkit-appearance: none; -moz-appearance: textfield; transition: color 0.3s; }
         .input-with-unit input::-webkit-outer-spin-button, .input-with-unit input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .input-with-unit .unit { padding: 8px; background: transparent; border-left: 1px solid rgba(255,255,255,0.05); color: #8b949e; font-size: 0.8rem; display: flex; align-items: center; transition: border-color 0.3s, color 0.3s; }
         
@@ -153,7 +158,7 @@
         .btn-danger:hover { background: #ef4444; color: white; transform: scale(0.98); }
 
         #main { flex: 1; background-color: #05080f; background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px); background-size: 32px 32px; padding: 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s, background-image 0.3s; }
-        .canvas-container { border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); overflow: hidden; background: #000; max-width: 100%; max-height: 100%; display: flex; transition: box-shadow 0.3s; }
+        .canvas-container { border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); overflow: hidden; background: #000; max-width: 100%; max-height: 100%; display: flex; transition: box-shadow 0.3s; cursor: crosshair; }
         canvas { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
 
         .color-input-wrapper { position: relative; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.2); flex-shrink: 0; transition: box-shadow 0.3s; }
@@ -162,56 +167,44 @@
         #icon-picker-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
         .icon-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; overflow: hidden; }
         .icon-btn img { max-width: 70%; max-height: 70%; object-fit: contain; }
-        .icon-btn.active { border-color: #4f46e5; background: rgba(79, 70, 229, 0.2); box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+        .icon-btn.active { border-color: #4f46e5; background: rgba(79, 70, 229, 0.1); box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
 
-        /* =========================================
-           4. LIGHT MODE THEME OVERRIDES
-           ========================================= */
+        /* 4. LIGHT MODE THEME OVERRIDES */
         body.light-mode { background-color: #f8fafc; color: #0f172a; }
-        body.light-mode #workspace-container, 
-        body.light-mode #navbar, 
-        body.light-mode #sidebar { background-color: #ffffff; border-color: rgba(0,0,0,0.08); }
+        body.light-mode #workspace-container, body.light-mode #navbar, body.light-mode #sidebar { background-color: #ffffff; border-color: rgba(0,0,0,0.08); }
         body.light-mode .navbar-center { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.04); }
-        body.light-mode .brand { color: #0f172a; }
         body.light-mode .project-name-badge:hover { color: #0f172a; }
-        
+        body.light-mode .brand { color: #0f172a; }
         body.light-mode .tool-btn { color: #64748b; }
         body.light-mode .tool-btn:hover { color: #0f172a; background: rgba(0,0,0,0.05); }
         body.light-mode .tool-btn.active { color: #0f172a; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        
+        body.light-mode .tool-btn[data-cat="scale"].active { background: rgba(236, 72, 153, 0.1); color: #ec4899; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.2); }
         body.light-mode .action-btn { color: #64748b; border-color: rgba(0,0,0,0.1); }
         body.light-mode .action-btn:hover { color: #0f172a; background: rgba(0,0,0,0.05); }
         body.light-mode .btn-pdf { background-color: #0f172a !important; color: #ffffff !important; }
-        
         body.light-mode .lang-btn { color: #64748b; }
         body.light-mode .lang-btn:hover { color: #0f172a; }
         body.light-mode .lang-btn.active { color: #0f172a; background: rgba(0,0,0,0.05); }
-        
         body.light-mode .control-group label { color: #475569; }
         body.light-mode .val-badge { background: rgba(0,0,0,0.05); color: #0f172a; border-color: rgba(0,0,0,0.05); }
-        
         body.light-mode select, body.light-mode input[type="text"], body.light-mode input[type="number"], body.light-mode .dark-input { background-color: #ffffff; border-color: rgba(0,0,0,0.15); color: #0f172a; }
         body.light-mode select:focus, body.light-mode input[type="text"]:focus, body.light-mode .dark-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
         body.light-mode select option { background-color: #ffffff; color: #0f172a; }
         body.light-mode input[type="range"] { background: rgba(0,0,0,0.1); }
         body.light-mode input[type="range"]::-webkit-slider-thumb { background: #4f46e5; }
-        
         body.light-mode .blueprint-item, body.light-mode .product-item, body.light-mode .bom-item { background-color: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         body.light-mode .blueprint-item:hover, body.light-mode .product-item:hover { background-color: #f8fafc; border-color: rgba(0,0,0,0.2); }
         body.light-mode .blueprint-item.active, body.light-mode .product-item.active { background-color: #e0e7ff; border-color: #4f46e5; }
         body.light-mode .product-name { color: #0f172a; }
         body.light-mode .product-desc { color: #64748b; }
-        
         body.light-mode #drop-zone, body.light-mode #landing-drop-zone { background: #f8fafc; border-color: rgba(0,0,0,0.15); }
         body.light-mode #drop-zone span { color: #0f172a !important; }
         body.light-mode #drop-zone:hover, body.light-mode #landing-drop-zone:hover { background: #f1f5f9; border-color: #4f46e5; }
-        
         body.light-mode .dark-panel { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.1); box-shadow: -10px 0 40px rgba(0,0,0,0.05); }
         body.light-mode .panel-header { border-color: rgba(0,0,0,0.1); }
         body.light-mode .panel-title { color: #0f172a; }
         body.light-mode .close-btn { color: #64748b; }
         body.light-mode .close-btn:hover { color: #0f172a; }
-        
         body.light-mode .panel-tabs { background: rgba(0,0,0,0.05); border-color: transparent; }
         body.light-mode .tab-btn { color: #64748b; }
         body.light-mode .tab-btn.active { background: #ffffff; color: #0f172a; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -226,29 +219,23 @@
         body.light-mode .btn-full-screen { color: #0f172a; border-color: rgba(0,0,0,0.2); }
         body.light-mode .btn-full-screen:hover { background: rgba(0,0,0,0.05); }
         body.light-mode .btn-apply, body.light-mode #launch-btn { background: #0f172a; color: #ffffff; }
-        
         body.light-mode #main { background-color: #f1f5f9; background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px); }
         body.light-mode .canvas-container { box-shadow: 0 20px 50px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05); background: #ffffff; }
         body.light-mode .color-input-wrapper { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1); }
         body.light-mode .icon-btn { background: #ffffff; border-color: rgba(0,0,0,0.15); }
         body.light-mode .icon-btn.active { border-color: #4f46e5; background: rgba(79, 70, 229, 0.1); }
-        
         body.light-mode #landing-overlay { background: rgba(255, 255, 255, 0.85); }
         body.light-mode #landing-overlay > div { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 24px 60px rgba(0,0,0,0.15); }
         body.light-mode #landing-overlay h1 { color: #0f172a !important; }
         body.light-mode #landing-overlay p, body.light-mode #landing-overlay label, body.light-mode #landing-drop-zone div { color: #64748b !important; }
         body.light-mode #landing-drop-zone span { color: #0f172a !important; }
-        
         body.light-mode .toast { background: #ffffff; color: #0f172a; border-color: rgba(0,0,0,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        body.light-mode #sidebar-toggle-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.05); color: #0f172a; }
         
         @media (max-width: 820px) {
             body.light-mode #mobile-dock { background: rgba(255, 255, 255, 0.90); border-color: rgba(0,0,0,0.1); }
         }
 
-        /* =========================================
-           5. RESPONSIVE OPTIMIZATIONS (Mobile)
-           ========================================= */
+        /* 5. RESPONSIVE OPTIMIZATIONS (Mobile) */
         .hidden { display: none !important; }
 
         @media (max-width: 820px) {
@@ -304,29 +291,76 @@
             @keyframes slideDown { to { transform: translateY(0); } }
             @keyframes slideUp { to { transform: translateY(-120%); opacity: 0; } }
         }
+
+        /* Wizard Overlay Styling */
+        #setup-wizard {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 8000; display: flex; flex-direction: column; 
+            align-items: flex-end; justify-content: flex-start; 
+            padding: 90px 30px; 
+            transition: opacity 0.4s ease;
+        }
+
+        #setup-prompt {
+            pointer-events: auto;
+            background:#0b1120; border-radius:24px; width:420px;
+            box-shadow:0 24px 80px rgba(0,0,0,0.8); border:1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; gap: 0; overflow: hidden;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .wizard-panel { padding: 30px; }
+        .wizard-info-bar {
+            background: rgba(79, 70, 229, 0.1); border-bottom: 1px solid rgba(79, 70, 229, 0.2);
+            color: #a5b4fc; font-size: 0.85rem; padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+        }
+        .wizard-info-bar i { font-size: 1.1rem; color: #4f46e5; }
+        .button-group-horizontal { display: flex; gap: 8px; margin-bottom: 20px; }
+        .action-btn.icon-only { padding: 12px; }
+
+        .switch-container { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .switch-label-group { display: flex; flex-direction: column; gap: 2px; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .switch-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 24px; }
+        .switch-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: #8b949e; transition: .4s; border-radius: 50%; }
+        input:checked + .switch-slider { background-color: #4f46e5; }
+        input:focus + .switch-slider { box-shadow: 0 0 1px #4f46e5; }
+        input:checked + .switch-slider:before { transform: translateX(20px); background-color: #ffffff; }
+
+        body.light-mode #setup-prompt { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 24px 60px rgba(0,0,0,0.15); }
+        body.light-mode .wizard-info-bar { background: #e0e7ff; border-color: rgba(79, 70, 229, 0.2); color: #4338ca; }
+        body.light-mode .switch-slider { background-color: rgba(0,0,0,0.1); }
+        body.light-mode .switch-slider:before { background-color: #ffffff; }
+        body.light-mode .wizard-footer { border-color: rgba(0,0,0,0.05); }
     </style>
 </head>
 
 <body>
 
-    <!-- =======================================================
-         VIEW 1: THE LANDING PAGE
-         ======================================================= -->
+    <!-- VIEW 1: THE LANDING PAGE -->
     <div id="landing-page-container">
         <nav id="landing-nav">
-            <div class="landing-logo">BERSI.</div>
+            <div class="landing-logo">
+                BERSI.
+                <!-- 50% larger logo -->
+                <img class="blend-logo-dark" src="Logo/1.png" alt="Bersi Icon" height="33" style="margin-bottom: 2px;">
+            </div>
             <div class="landing-nav-links">
                 <a onclick="openWorkspace()">Platform</a>
                 <a href="#about">About</a>
             </div>
-            <!-- Mobile Launch Button (Hidden on Desktop) -->
             <button class="btn-primary" style="padding: 8px 20px; font-size: 0.9rem;" onclick="openWorkspace()" id="mobile-hero-btn">Launch</button>
             <style>@media(min-width: 821px){#mobile-hero-btn{display:none;}}</style>
         </nav>
 
         <header class="hero">
             <div class="slideshow">
-                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=1920');"></div>
+                <video class="slide active" autoplay loop muted playsinline>
+                    <source src="Logo/herologo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
                 <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=1920');"></div>
                 <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&q=80&w=1920');"></div>
             </div>
@@ -345,31 +379,26 @@
                     <p>I am <span class="highlight">Gunnar Bersi</span>, a security professional with over a decade of comprehensive experience across the security sector. My career spans a wide spectrum of roles—from security officer and monitoring station operator to technician, sales representative, security consultant, and junior business manager.</p>
                     <p>This diverse background has equipped me with a holistic understanding of both the operational and strategic facets of security systems, bridging the gap between on-the-ground implementation and high-level client advisory.</p>
                     <p>Alongside my industry expertise, my background in programming empowers me to merge practical security knowledge with technical innovation. Currently, I am a proud team member at <span class="highlight">Nortek Security Solutions</span>, contributing to the advancement of modern security infrastructure.</p>
-                    <p>I developed this platform to revolutionize how security systems are designed and planned. By enabling professionals to seamlessly integrate and visualize equipment directly onto architectural blueprints, this tool is built to drive accuracy, enhance efficiency, and elevate overall project execution.</p>
+                    <p>I developed this platform to revolutionize how security systems are design and planned. By enabling professionals to seamlessly integrate and visualize equipment directly onto architectural blueprints, this tool is built to drive accuracy, enhance efficiency, and elevate overall project execution.</p>
                 </div>
             </div>
         </section>
     </div>
 
-    <!-- =======================================================
-         VIEW 2: THE WORKSPACE
-         ======================================================= -->
+    <!-- VIEW 2: THE WORKSPACE -->
     <div id="workspace-container">
         
-        <!-- SPA LANDING OVERLAY (Initial File Upload inside Workspace) -->
+        <!-- SPA LANDING OVERLAY -->
         <div id="landing-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(11, 17, 32, 0.85); backdrop-filter: blur(24px); z-index:9999; display:flex; align-items:center; justify-content:center; transition: opacity 0.4s ease;">
             <div style="background:#0b1120; padding:40px; border-radius:24px; width:500px; box-shadow:0 24px 60px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 20px; transition: background 0.3s, border-color 0.3s;">
-                
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h1 style="color: white; margin-bottom: 5px; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">New Project</h1>
-                    <p style="color: #8b949e; font-size: 0.9rem;">Upload your floorplans to setup the workspace.</p>
+                    <p style="color: #8b949e; font-size: 0.9rem;">Add your floorplans to launch the workspace.</p>
                 </div>
-
                 <div class="control-group" style="margin-bottom: 0;">
                     <label>Project Name</label>
                     <input type="text" id="project-name-input" style="width: 100%; margin-top: 8px;" placeholder="e.g. Downtown Office Building">
                 </div>
-
                 <div class="control-group" style="margin-bottom: 0; margin-top: 15px;">
                     <label>Project Blueprints</label>
                     <div id="landing-drop-zone" style="margin-top: 8px;">
@@ -378,23 +407,90 @@
                         <input type="file" id="landing-upload" accept="image/*" multiple style="display: none;">
                     </div>
                 </div>
-
-                <!-- Gallery for uploaded files -->
                 <div id="landing-gallery" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto;"></div>
+                <button id="launch-btn" style="margin-top: 10px;" class="btn-primary">Launch & Setup Blueprints ➔</button>
+            </div>
+        </div>
 
-                <button id="launch-btn" style="margin-top: 10px;">Launch Environment ➔</button>
+        <!-- MULTI-STEP SETUP WIZARD OVERLAY -->
+        <div id="setup-wizard" class="hidden">
+            <div id="setup-prompt">
+                <div class="wizard-info-bar" id="wizard-instruction-bar">
+                    <i class="ph ph-info"></i>
+                    <span id="wizard-instruction-text">Setup Instruction</span>
+                </div>
+
+                <div id="wizard-panel-scale" class="wizard-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                        <h3 style="margin:0; color:#fff; font-size: 1.2rem;">Step 1/3: Set blueprint scale</h3>
+                    </div>
+                    <p style="color:#8b949e; font-size:0.85rem; margin-bottom: 10px;">Draw a line between two points with a known real-world distance (e.g. a standard doorway at 1m).</p>
+                    <div id="wizard-ruler-desc-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-top: 15px;">
+                        <span style="font-weight: 600; font-size: 0.9rem; color: #fff; display:block; margin-bottom: 6px;">📏 Draw ruler</span>
+                        <p class="helper-text" style="color: #a1a1aa; font-size: 0.8rem; margin:0;">Currently drawing ruler. To delete points or restart, right click anywhere on the canvas or press ESC.</p>
+                    </div>
+                </div>
+
+                <div id="ruler-value-modal" class="hidden" style="background:#0b1120; padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.08); position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9000; width:300px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                    <p style="color:#fff; font-size:0.9rem; margin:0 0 15px 0;">What is the actual distance of that line?</p>
+                    <div style="display:flex; gap:8px;">
+                        <input type="number" id="ruler-val-input" style="flex:1;" placeholder="e.g. 1">
+                        <select style="width:70px;"><option>m</option><option>ft</option></select>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:15px; justify-content: flex-end;">
+                        <button class="btn-primary" style="padding: 8px 16px; font-size:0.85rem;" onclick="applyWizardScale()">Apply Scale</button>
+                    </div>
+                </div>
+
+                <div id="wizard-panel-crop" class="wizard-panel hidden">
+                    <h3 style="margin:0; color:#fff; font-size: 1.2rem;">Step 2/3: Crop image</h3>
+                    <p style="color:#8b949e; font-size:0.85rem; margin:10px 0 20px 0;">Use the canvas handles to resize the blueprint and right-click on the handles to remove them.</p>
+                    <div class="button-group-horizontal">
+                        <button class="action-btn" id="btn-crop-start" onclick="wizardStartCrop()"><i class="ph ph-crop"></i> Crop image</button>
+                        <button class="action-btn icon-only" onclick="wizardRotate(-90)"><i class="ph ph-arrow-u-up-left"></i></button>
+                        <button class="action-btn icon-only" onclick="wizardRotate(90)"><i class="ph ph-arrow-u-up-right"></i></button>
+                    </div>
+                </div>
+
+                <div id="wizard-panel-settings" class="wizard-panel hidden">
+                    <h3 style="margin:0; color:#fff; font-size: 1.2rem;">Step 3/3: Customize app settings</h3>
+                    <p style="color:#8b949e; font-size:0.85rem; margin:10px 0 20px 0;">Adjust the device icon size and enable an additional background layer to improve contrast.</p>
+                    <div class="control-group">
+                        <label>Icon Size <span id="wizard-iconsize-val" class="val-badge">24px</span></label>
+                        <input type="range" id="wizard-iconsize-slider" min="12" max="64" value="24" oninput="wizardUpdateIconSize(this.value)">
+                    </div>
+                    <div class="switch-container">
+                        <div class="switch-label-group">
+                            <label class="card-label" style="margin:0;">Scrim</label>
+                            <span class="helper-text" style="margin:0;">Additional layer of color on top of the image.</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="wizard-scrim-toggle" onchange="wizardUpdateScrim(this.checked)">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="wizard-footer" style="display: flex; gap: 12px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding: 24px 40px; align-items: center;">
+                    <button class="action-btn" id="wizard-skip-btn" onclick="wizardNextStep()" style="margin-right: auto; padding: 10px 16px; border: none; font-weight: 600; background: transparent;">Skip Step</button>
+                    <button class="btn-primary" id="wizard-next-btn" onclick="wizardNextStep()">Next ➔</button>
+                    <button class="btn-primary hidden" id="wizard-finish-btn" onclick="wizardFinish()">Finish ✓</button>
+                </div>
             </div>
         </div>
 
         <!-- WORKSPACE NAVBAR -->
         <div id="navbar">
             <div class="navbar-left">
-                <!-- UNIVERSAL SIDEBAR TOGGLE -->
-                <button type="button" id="sidebar-toggle-btn" class="action-btn" onclick="toggleSidebar()" style="padding: 8px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); color:#fff;">
+                <!-- Cleaned up inline styles preventing the button from changing colors in light mode -->
+                <button type="button" id="sidebar-toggle-btn" class="action-btn" onclick="toggleSidebar()" style="padding: 8px 12px; border-radius: 8px;">
                     <i class="ph ph-sidebar-simple" style="font-size: 1.2rem;"></i>
                 </button>
-                
-                <div class="brand">BERSI.</div>
+                <div class="brand">
+                    BERSI.
+                    <!-- 50% larger logo -->
+                    <img id="workspace-logo-img" class="blend-logo-dynamic" src="Logo/1.png" alt="Bersi Icon" height="27" style="margin-bottom: 1px;">
+                </div>
                 <div id="active-project-name" class="project-name-badge">Untitled Project</div>
             </div>
             
@@ -423,17 +519,13 @@
             </div>
             
             <div class="navbar-right">
-                
-                <!-- NEW THEME TOGGLE BUTTON -->
                 <button type="button" class="action-btn popover-trigger" id="theme-toggle-btn" data-content="Toggle Light/Dark Mode" onclick="toggleTheme()" style="padding: 8px 12px; border-radius: 100px;">
                     <i class="ph ph-sun" style="font-size: 1.2rem;"></i>
                 </button>
-
                 <div class="lang-switch">
                     <button type="button" class="lang-btn active" onclick="setLanguage('en')" id="btn-en">EN</button>
                     <button type="button" class="lang-btn" onclick="setLanguage('is')" id="btn-is">IS</button>
                 </div>
-                
                 <div class="export-group">
                     <button type="button" class="action-btn popover-trigger" data-content="Return to Dashboard" onclick="returnToHome()">
                         <i class="ph ph-house"></i> <span>Home</span>
@@ -482,8 +574,8 @@
                         <label><span id="fovLabelText" data-i18n="lbl_angle">Detection Angle</span> <span id="fovVal" class="val-badge">75°</span></label>
                         <input type="range" id="fovInput" min="5" max="180" value="75">
                     </div>
-                    <div class="control-group">
-                        <label><span id="distLabelText" data-i18n="lbl_range">Detection Range</span> <span id="distVal" class="val-badge">200px</span></label>
+                    <div class="control-group hidden">
+                        <label><span id="distLabelText" data-i18n="lbl_range">Detection Range</span> <span id="distVal" class="val-badge">10.0 m</span></label>
                         <input type="range" id="distInput" min="10" max="800" value="200">
                     </div>
                 </div>
@@ -501,53 +593,98 @@
                     <div id="icon-picker-list"></div>
                 </div>
 
-                <div class="control-group">
-                    <label>6. Theme / Zone Color</label>
-                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
-                        <div class="color-input-wrapper">
-                            <input type="color" id="theme-color" value="#ffffff"> 
-                        </div>
-                        <div id="history-container" style="display: flex; gap: 5px;"></div>
-                    </div>
-                </div>
-
+                <!-- Equipment List (BOM) Section -->
                 <div class="control-group">
                     <label data-i18n="lbl_list">Equipment List (BOM)</label>
+                    <div style="display: flex; justify-content: center; margin-bottom: 15px; margin-top: 10px;">
+                        <!-- 50% larger logo -->
+                        <img id="bom-logo" src="Logo/bersilogodark.png" alt="Bersi Logo" height="36">
+                    </div>
                     <div id="bom-list">
                         <div style="color: #8b949e; font-size:0.8rem; text-align:center;" data-i18n="msg_empty">No equipment placed yet.</div>
                     </div>
                 </div>
             </div> 
 
-            <!-- CANVAS -->
             <div id="main" onclick="closeMobileMenu()">
                 <div class="canvas-container">
                     <canvas id="plannerCanvas"></canvas>
+                    <div id="scrim-layer" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); pointer-events:none; display:none;"></div>
                 </div>
             </div>
 
-            <!-- RIGHT PROPERTIES PANEL -->
+            <!-- RIGHT PROPERTIES PANEL (DYNAMIC CALCULATOR) -->
             <div id="properties-panel" class="dark-panel hidden">
                 <div class="panel-header">
-                    <div class="panel-title">📷 Camera Properties</div>
+                    <div class="panel-title" id="prop-title">📷 Device Properties</div>
                     <button class="close-btn" onclick="document.getElementById('properties-panel').classList.add('hidden')">&times;</button>
                 </div>
                 
-                <div class="panel-tabs">
-                    <button class="tab-btn"><i class="ph ph-gear"></i> Settings</button>
-                    <button class="tab-btn"><i class="ph ph-globe"></i> Network</button>
-                    <button class="tab-btn active"><i class="ph ph-paint-brush"></i> Appearance</button>
-                </div>
+               <div class="panel-tabs">
+    <button class="tab-btn active" id="tab-btn-settings" onclick="switchPropTab('settings')"><i class="ph ph-gear"></i> Settings</button>
+    <button class="tab-btn" id="tab-btn-appearance" onclick="switchPropTab('appearance')"><i class="ph ph-paint-brush"></i> Appearance</button>
+    <button class="tab-btn" id="tab-btn-information" onclick="switchPropTab('information')"><i class="ph ph-info"></i> Info</button>
+</div>
 
-                <div class="panel-content">
+                <div class="panel-content" id="prop-tab-settings">
                     <div class="property-card">
-                        <label class="card-label">🏷️ Display name:</label>
-                        <p class="helper-text">To show the display name, enable it in App Settings.</p>
-                        <input type="text" id="prop-display-name" class="dark-input" placeholder="Display name">
+                        <label class="card-label">📏 Installation height</label>
+                        <div class="slider-group">
+                            <input type="range" id="prop-height-slider" min="1" max="15" step="0.1" value="3">
+                            <div class="input-with-unit">
+                                <input type="number" id="prop-height-num" value="3" min="1" max="15" step="0.1">
+                                <span class="unit">m</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="property-card">
+                        <label class="card-label">📐 Angle (from vertical)</label>
+                        <div class="slider-group">
+                            <input type="range" id="prop-pitch-slider" min="5" max="85" value="45">
+                            <div class="input-with-unit">
+                                <input type="number" id="prop-pitch-num" value="45" min="5" max="85">
+                                <span class="unit">°</span>
+                            </div>
+                        </div>
+                        
+                        <div class="angle-diagram-container" style="background:#111827; border: 1px solid #374151; border-radius: 8px; margin-top: 15px; padding: 10px; display:flex; flex-direction:column; align-items:center;">
+                            <canvas id="angleDiagramCanvas" width="280" height="140"></canvas>
+                            <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 8px;">
+                                Calculated Ground Range: <span id="prop-calc-dist" style="color:#14b8a6; font-weight:bold;">3.00</span> m
+                            </div>
+                        </div>
                     </div>
 
                     <div class="property-card">
+                        <label class="card-label">↔️ Horizontal FOV (Width)</label>
+                        <div class="slider-group">
+                            <input type="range" id="prop-fov-slider" min="10" max="180" value="75">
+                            <div class="input-with-unit">
+                                <input type="number" id="prop-fov-num" value="75" min="10" max="180">
+                                <span class="unit">°</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+             <div class="panel-content hidden" id="prop-tab-information">
+    <div class="property-card">
+        <label class="card-label" id="info-prod-name" style="font-size: 1.1rem;">Product Name</label>
+        <div class="sub-label" id="info-prod-desc" style="margin-bottom: 4px;">Description</div>
+        <div class="product-specs" id="info-prod-specs" style="color: #8b5cf6; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">Specs</div>
+        
+        <a id="info-link-manuf" href="#" target="_blank" class="btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; margin-bottom: 12px; font-size: 0.85rem; padding: 12px;">
+            <i class="ph ph-globe" style="font-size: 1.1rem;"></i> Manufacturer Page
+        </a>
+        <a id="info-link-ds" href="#" target="_blank" class="action-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.85rem; padding: 12px;">
+            <i class="ph ph-file-pdf" style="font-size: 1.1rem;"></i> View Data Sheet
+        </a>
+    </div>
+</div>
+                    <div class="property-card">
                         <label class="card-label">🧩 Icon Options</label>
+                        
                         <label class="sub-label">Icon rotation</label>
                         <div class="slider-group">
                             <input type="range" id="prop-rotation-slider" min="0" max="360" value="0">
@@ -556,7 +693,7 @@
                                 <span class="unit">°</span>
                             </div>
                         </div>
-
+                        
                         <label class="sub-label" style="margin-top: 15px;">Icon Size</label>
                         <div class="slider-group">
                             <input type="range" id="prop-size-slider" min="12" max="64" value="24">
@@ -565,83 +702,61 @@
                                 <span class="unit">px</span>
                             </div>
                         </div>
+                        
+                        <label class="sub-label" style="margin-top: 15px;">Select Map Icon</label>
+                        <div id="prop-icon-list" style="display:flex; flex-wrap:wrap; gap:8px; padding-bottom: 20px;"></div>
                     </div>
-
-                    <div class="property-card">
-                        <label class="card-label">📐 Angle</label>
-                        <div class="slider-group">
-                            <input type="range" id="prop-angle-slider" min="0" max="90" value="41">
-                            <div class="input-with-unit">
-                                <input type="number" id="prop-angle-num" value="41" min="0" max="90">
-                                <span class="unit">°</span>
-                            </div>
-                        </div>
-
-                        <div class="angle-diagram-container">
-                            <div class="diagram-mockup">
-                                <span class="diagram-text" style="padding-top: 10px;">Height: 3.00m</span>
-                                <span class="diagram-text">Angle: <span id="diagram-angle-text">41</span>°</span>
-                                <span class="diagram-text">Distance: ~13.08m</span>
-                            </div>
-                            <button class="btn-full-screen">⛶ Full Screen</button>
-                        </div>
-                    </div>
-
-                    <div class="property-card">
-                        <label class="card-label">↔️ Limit display range</label>
-                        <div class="slider-group">
-                            <input type="range" id="prop-range-slider" min="5" max="100" value="30">
-                            <div class="input-with-unit">
-                                <input type="number" id="prop-range-num" value="30" min="5" max="100">
-                                <span class="unit">m</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button class="btn-apply">📋 Apply to other cameras</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- SHARED DOM ELEMENTS -->
     <div id="toast-container"></div>
-    <div id="smart-popover">
-        <div id="popover-text"></div>
-    </div>
+    <div id="smart-popover"><div id="popover-text"></div></div>
 
-    <!-- MAIN APP MODULE -->
     <script type="module" src="./js/app.js"></script>
 
-    <!-- UI FEATURES SCRIPT -->
     <script>
-        // ==========================================
-        // THEME TOGGLE LOGIC
-        // ==========================================
+        // Theme & Toggle Logic
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const icon = document.querySelector('#theme-toggle-btn i');
             
+            // Only swap the workspace logo and the BOM logo
+            const workspaceLogoImg = document.getElementById('workspace-logo-img');
+            const bomLogo = document.getElementById('bom-logo');
+
             if (document.body.classList.contains('light-mode')) {
                 icon.classList.remove('ph-sun');
                 icon.classList.add('ph-moon');
                 localStorage.setItem('bersi_theme', 'light');
+                
+                if (workspaceLogoImg) workspaceLogoImg.src = 'Logo/2.png';
+                if (bomLogo) bomLogo.src = 'Logo/bersilogolight.png';
             } else {
                 icon.classList.remove('ph-moon');
                 icon.classList.add('ph-sun');
                 localStorage.setItem('bersi_theme', 'dark');
+                
+                if (workspaceLogoImg) workspaceLogoImg.src = 'Logo/1.png';
+                if (bomLogo) bomLogo.src = 'Logo/bersilogodark.png';
             }
         }
-
-        // Apply saved theme on load
+        
         window.addEventListener('DOMContentLoaded', () => {
+            const workspaceLogoImg = document.getElementById('workspace-logo-img');
+            const bomLogo = document.getElementById('bom-logo');
+            
             if (localStorage.getItem('bersi_theme') === 'light') {
                 document.body.classList.add('light-mode');
                 const icon = document.querySelector('#theme-toggle-btn i');
-                if(icon) {
-                    icon.classList.remove('ph-sun');
-                    icon.classList.add('ph-moon');
-                }
+                if(icon) { icon.classList.remove('ph-sun'); icon.classList.add('ph-moon'); }
+                
+                if (workspaceLogoImg) workspaceLogoImg.src = 'Logo/2.png';
+                if (bomLogo) bomLogo.src = 'Logo/bersilogolight.png';
+            } else {
+                if (workspaceLogoImg) workspaceLogoImg.src = 'Logo/1.png';
+                if (bomLogo) bomLogo.src = 'Logo/bersilogodark.png';
             }
         });
 
@@ -651,144 +766,91 @@
             document.body.style.overflow = 'hidden';
             window.dispatchEvent(new Event('resize'));
         }
-
         function returnToHome() {
             document.getElementById('workspace-container').style.display = 'none';
             document.getElementById('landing-page-container').style.display = 'block';
             document.body.style.overflow = '';
         }
-
-        // ==========================================
-        // UNIVERSAL SIDEBAR TOGGLE LOGIC
-        // ==========================================
         window.toggleSidebar = () => {
             const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth <= 820) {
-                // Mobile behavior: Slide in from left
-                sidebar.classList.toggle('mobile-open');
-            } else {
-                // Desktop behavior: Collapse to the left to expand canvas
-                sidebar.classList.toggle('desktop-collapsed');
-                // Force a resize event after the CSS transition finishes to ensure canvas centering
-                setTimeout(() => window.dispatchEvent(new Event('resize')), 400);
-            }
+            if (window.innerWidth <= 820) sidebar.classList.toggle('mobile-open');
+            else { sidebar.classList.toggle('desktop-collapsed'); setTimeout(() => window.dispatchEvent(new Event('resize')), 400); }
         };
-
-        // Auto-close sidebar on mobile when interacting with canvas/tools
-        window.closeMobileMenu = () => {
-            if (window.innerWidth <= 820) {
-                document.getElementById('sidebar').classList.remove('mobile-open');
-            }
-        };
-
+        window.closeMobileMenu = () => { if (window.innerWidth <= 820) document.getElementById('sidebar').classList.remove('mobile-open'); };
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('landing-nav');
-            if (window.scrollY > 50) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
+            if (window.scrollY > 50) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
         });
 
-        const slides = document.querySelectorAll('.slide');
+        // Advanced Slideshow Logic (Handling Video and Images)
+        const slideshow = document.querySelector('.slideshow');
+        const slides = slideshow.children;
         let currentSlide = 0;
-        setInterval(() => {
-            if(document.getElementById('landing-page-container').style.display !== 'none') {
-                slides[currentSlide].classList.remove('active');
-                currentSlide = (currentSlide + 1) % slides.length;
-                slides[currentSlide].classList.add('active');
+
+        function playSlideshow() {
+            slides[currentSlide].classList.remove('active');
+            if (slides[currentSlide].tagName === 'VIDEO') {
+                slides[currentSlide].pause();
+                slides[currentSlide].currentTime = 0;
             }
-        }, 5000); 
+            
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+            
+            if (slides[currentSlide].tagName === 'VIDEO') {
+                slides[currentSlide].play();
+            }
+        }
+
+        let slideshowInterval = setInterval(playSlideshow, 5000);
+
+        slideshow.addEventListener('ended', (e) => {
+            if (e.target.tagName === 'VIDEO' && e.target.classList.contains('slide')) {
+                clearInterval(slideshowInterval);
+                playSlideshow(); 
+                slideshowInterval = setInterval(playSlideshow, 5000); 
+            }
+        }, true); 
 
         const Toast = {
             container: document.getElementById('toast-container'),
             show(type, message, duration = 3000) {
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                toast.innerHTML = `
-                    <div class="toast-content">
-                        <span>${message}</span>
-                        <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:inherit;font-size:1.2rem;">&times;</button>
-                    </div>
-                    <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
-                `;
+                const toast = document.createElement('div'); toast.className = `toast toast-${type}`;
+                toast.innerHTML = `<div class="toast-content"><span>${message}</span><button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:inherit;font-size:1.2rem;">&times;</button></div><div class="toast-progress" style="animation-duration: ${duration}ms"></div>`;
                 this.container.appendChild(toast);
-                setTimeout(() => {
-                    toast.classList.add('closing');
-                    toast.addEventListener('animationend', () => toast.remove());
-                }, duration);
+                setTimeout(() => { toast.classList.add('closing'); toast.addEventListener('animationend', () => toast.remove()); }, duration);
             }
-        };
-        window.Toast = Toast; 
+        }; window.Toast = Toast; 
 
-        // Smart Popover (Disable on touch devices to prevent stuck tooltips)
-        const popover = document.getElementById('smart-popover');
-        const popoverText = document.getElementById('popover-text');
-        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-        
-        if (!isTouchDevice) {
+        const popover = document.getElementById('smart-popover'); const popoverText = document.getElementById('popover-text');
+        if (!('ontouchstart' in window) && navigator.maxTouchPoints === 0) {
             document.querySelectorAll('.popover-trigger').forEach(trigger => {
-                trigger.addEventListener('mouseenter', e => {
-                    popoverText.textContent = trigger.getAttribute('data-content');
-                    popover.style.display = 'block';
-                    const rect = trigger.getBoundingClientRect();
-                    popover.style.top = `${rect.bottom + 10}px`;
-                    popover.style.left = `${rect.left}px`;
-                    popover.classList.add('active');
-                });
-                trigger.addEventListener('mouseleave', () => {
-                    popover.classList.remove('active');
-                });
+                trigger.addEventListener('mouseenter', e => { popoverText.textContent = trigger.getAttribute('data-content'); popover.style.display = 'block'; const rect = trigger.getBoundingClientRect(); popover.style.top = `${rect.bottom + 10}px`; popover.style.left = `${rect.left}px`; popover.classList.add('active'); });
+                trigger.addEventListener('mouseleave', () => { popover.classList.remove('active'); });
             });
         }
 
-        const colorPicker = document.getElementById('theme-color');
-        const historyContainer = document.getElementById('history-container');
-        let savedColors = JSON.parse(localStorage.getItem('cctv_colors')) || ['#ffffff'];
-
-        function renderHistory() {
-            historyContainer.innerHTML = '';
-            savedColors.forEach(hex => {
-                const swatch = document.createElement('div');
-                swatch.style.cssText = `width:25px; height:25px; border-radius:50%; cursor:pointer; background:${hex}; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);`;
-                swatch.onclick = () => { colorPicker.value = hex; };
-                historyContainer.appendChild(swatch);
-            });
+        window.switchPropTab = (tabName) => {
+            document.querySelectorAll('.panel-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.panel-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+            document.getElementById(`prop-tab-${tabName}`).classList.remove('hidden');
         }
-        colorPicker.addEventListener('change', e => {
-            savedColors = [e.target.value, ...savedColors.filter(c => c !== e.target.value)].slice(0, 5);
-            localStorage.setItem('cctv_colors', JSON.stringify(savedColors));
-            renderHistory();
-        });
-        renderHistory();
 
         function setupSyncedInputs(sliderId, numInputId, callback) {
-            const slider = document.getElementById(sliderId);
-            const numInput = document.getElementById(numInputId);
-            if (!slider || !numInput) return;
-
-            slider.addEventListener('input', (e) => {
-                numInput.value = e.target.value;
-                if(callback) callback(e.target.value);
-            });
-
-            numInput.addEventListener('input', (e) => {
-                let val = parseInt(e.target.value);
-                if (val < slider.min) val = slider.min;
-                if (val > slider.max) val = slider.max;
-                slider.value = val;
-                if(callback) callback(val);
-            });
+            const slider = document.getElementById(sliderId); const numInput = document.getElementById(numInputId); if (!slider || !numInput) return;
+            slider.addEventListener('input', (e) => { numInput.value = e.target.value; if(callback) callback(e.target.value); });
+            numInput.addEventListener('input', (e) => { let val = parseFloat(e.target.value); if (val < slider.min) val = slider.min; if (val > slider.max) val = slider.max; slider.value = val; if(callback) callback(val); });
         }
 
-        setupSyncedInputs('prop-rotation-slider', 'prop-rotation-num');
-        setupSyncedInputs('prop-size-slider', 'prop-size-num');
-        setupSyncedInputs('prop-range-slider', 'prop-range-num');
-        setupSyncedInputs('prop-angle-slider', 'prop-angle-num', (val) => {
-            const diagText = document.getElementById('diagram-angle-text');
-            if(diagText) diagText.innerText = val;
-        });
+        setupSyncedInputs('prop-height-slider', 'prop-height-num', () => { if(window.updateDiagramAndRange) window.updateDiagramAndRange(); });
+        setupSyncedInputs('prop-pitch-slider', 'prop-pitch-num', () => { if(window.updateDiagramAndRange) window.updateDiagramAndRange(); });
+        setupSyncedInputs('prop-fov-slider', 'prop-fov-num', () => { if(window.updateDiagramAndRange) window.updateDiagramAndRange(); });
+        setupSyncedInputs('prop-rotation-slider', 'prop-rotation-num', () => { if(window.updateDiagramAndRange) window.updateDiagramAndRange(); });
+        setupSyncedInputs('prop-size-slider', 'prop-size-num', () => { if(window.updateDiagramAndRange) window.updateDiagramAndRange(); });
+        
+        document.getElementById('prop-color-picker').addEventListener('input', () => { if(window.updateDiagramAndRange) window.updateDiagramAndRange(); });
 
-        window.openPropertiesPanel = function() {
-            document.getElementById('properties-panel').classList.remove('hidden');
-        };
     </script>
 </body>
 </html>
